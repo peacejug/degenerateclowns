@@ -2,14 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Super Chaotic Clown Slot</title>
 <style>
 body,html{margin:0;padding:0;height:100%;font-family:Arial,sans-serif;background:#111;color:#fff;overflow-x:hidden;position:relative;}
 body.bg-shake{animation:shakeBG 0.6s ease-in-out;}
 @keyframes shakeBG{0%,100%{transform:translate(0);}25%{transform:translate(-10px,5px);}50%{transform:translate(10px,-5px);}75%{transform:translate(-5px,10px);}}
-
-/* Layout */
 .overlay{display:flex;flex-wrap:nowrap;justify-content:flex-start;gap:6px;align-items:flex-start;background:url('https://i.imgur.com/oXURWxC.png') no-repeat center center/cover;min-height:100vh;padding:12px;}
 .left{width:200px;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);border-radius:14px;padding:14px;}
 .left h3{color:yellow;text-align:center;margin:0 0 8px 0;}
@@ -36,8 +34,6 @@ h1{margin:6px 0 0 0;font-size:32px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0
 .wild-animation{position:absolute;width:120px;height:120px;animation:shakeWild 1s infinite;z-index:9998;}
 @keyframes shakeWild{0%,100%{transform:translate(0);}25%{transform:translate(-8px,5px);}50%{transform:translate(8px,-5px);}75%{transform:translate(-5px,8px);}}
 #wildText{position:absolute;color:yellow;font-size:24px;font-weight:bold;text-shadow:2px 2px 6px #000;display:none;z-index:9999;}
-#volumeControl{position:fixed;top:10px;right:10px;color:white;z-index:9999;}
-#volumeSlider{width:120px;}
 #marioContainer{position:absolute;top:50%;left:-200px;pointer-events:none;z-index:9997;}
 #chaosContainer{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;}
 @media(max-width:860px){.left{width:92%;order:2;}.main{order:1;width:100%;}.slot-wrap{width:94%;}.popup{top:40%;}}
@@ -88,12 +84,6 @@ h1{margin:6px 0 0 0;font-size:32px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0
 <div id="goldenLinesContainer"></div>
 <div id="chaosContainer"></div>
 
-<!-- Volume control -->
-<div id="volumeControl">
-  <label for="volumeSlider">Volume:</label>
-  <input type="range" id="volumeSlider" min="0" max="100" value="50">
-</div>
-
 <script>
 // Symbols
 const symbols=[
@@ -113,7 +103,6 @@ const spinSound=new Audio('spin.mp3'); spinSound.loop=false;
 const winSound=new Audio('win.mp3');
 const jackpotFiles=['jackpot.mp3','jackpot2.mp3','jackpot3.mp3','jackpot4.mp3','jackpot5.mp3'];
 let jackpotSound=new Audio();
-const audioElements=[spinSound,winSound,jackpotSound];
 
 // Elements
 const chips=[...document.querySelectorAll('.chip')];
@@ -128,44 +117,62 @@ const goldenLinesContainer=document.getElementById('goldenLinesContainer');
 const wildAnimation=document.getElementById('wildAnimation');
 const wildText=document.getElementById('wildText');
 const marioContainer=document.getElementById('marioContainer');
-const volumeSlider=document.getElementById('volumeSlider');
-
-// Set initial volume
-audioElements.forEach(a=>a.volume=0.5);
-
-// Volume control
-volumeSlider.addEventListener('input',()=>{
-    const vol=volumeSlider.value/100;
-    audioElements.forEach(a=>a.volume=vol);
-});
 
 // Chip selection
 chips.forEach(c=>c.addEventListener('click',()=>{chips.forEach(c2=>c2.classList.remove('selected'));c.classList.add('selected');selectedBet=parseInt(c.dataset.bet);}))
 
-// Reels
 function randomSymbol(){return symbols[Math.floor(Math.random()*symbols.length)];}
-function clearReels(){reelContainers.forEach(r=>r.innerHTML='');}
-function createReels(){
-  for(let i=0;i<3;i++){
-    for(let j=0;j<3;j++){
-      const cell=document.createElement('div');cell.className='cell';
-      const img=document.createElement('img');img.src=randomSymbol();
-      cell.appendChild(img);reelContainers[i].appendChild(cell);
-    }
-  }
+
+// Reel spin animation
+function spinReelsAnimation(callback){
+    const spinDuration=1200;
+    reelContainers.forEach((reel,index)=>{
+        const strip=document.createElement('div'); strip.className='reel-strip';
+        for(let i=0;i<6;i++){
+            const cell=document.createElement('div'); cell.className='cell';
+            const img=document.createElement('img'); img.src=randomSymbol();
+            cell.appendChild(img); strip.appendChild(cell);
+        }
+        reel.innerHTML=''; reel.appendChild(strip);
+        const finalOffset=-(360*3);
+        strip.style.transition=`transform ${spinDuration/1000}s cubic-bezier(0.25,1,0.5,1)`;
+        setTimeout(()=>{ strip.style.transform=`translateY(${finalOffset}px)`; },10);
+    });
+    setTimeout(callback, spinDuration);
 }
+
+// Golden line highlight
+function highlightGoldenLine(){
+    goldenLinesContainer.innerHTML='';
+    const line=document.createElement('div'); 
+    line.className='golden-line';
+    const rect=reelContainers[0].getBoundingClientRect();
+    line.style.top=(rect.top+360)+'px';
+    line.style.left=rect.left+'px';
+    line.style.width=(reelContainers[0].offsetWidth*3)+'px';
+    goldenLinesContainer.appendChild(line);
+    setTimeout(()=>goldenLinesContainer.removeChild(line),1200);
+}
+
+// Middle cell position for popups
 function getMiddleCellPosition() {
     const middleReel = reelContainers[1];
     const middleCell = middleReel.children[1];
     const rect = middleCell.getBoundingClientRect();
-    return { x: rect.left+rect.width/2+window.scrollX, y: rect.top+rect.height/2+window.scrollY };
+    return {
+        x: rect.left + rect.width/2 + window.scrollX,
+        y: rect.top + rect.height/2 + window.scrollY
+    };
 }
-function showPopup(popup, amount){
-    const pos=getMiddleCellPosition();
-    popup.style.left=pos.x+'px'; popup.style.top=pos.y+'px';
+
+// Popups
+function showPopup(popup, amount) {
+    const pos = getMiddleCellPosition();
+    popup.style.left = pos.x + 'px';
+    popup.style.top = pos.y + 'px';
     popup.classList.add('show');
-    popup.querySelector('.amount').textContent=amount+" doubloon";
-    setTimeout(()=>popup.classList.remove('show'),2000);
+    popup.querySelector('.amount').textContent = amount + " doubloon";
+    setTimeout(()=>popup.classList.remove('show'), 2000);
 }
 
 // Wildcard animation
@@ -190,59 +197,49 @@ function spawnMario(){
   },20);
 }
 
-// Highlight winning golden line
-function highlightGoldenLine(){
-    const line=document.createElement('div'); line.className='golden-line';
-    line.style.top='360px'; line.style.left='0px'; line.style.width='100%';
-    goldenLinesContainer.appendChild(line);
-    setTimeout(()=>goldenLinesContainer.removeChild(line),1200);
-}
+// Spin button
+spinBtn.addEventListener('click',()=>{if(!spinning) spin();});
 
-// Spin
+// Spin function
 function spin(){
-    if(spinning) return;
     spinning=true;
     spinCount++;
     if(balance<selectedBet){ alert('AHAHAH CLOWN'); spinning=false; return;}
     balance-=selectedBet; balanceDisplay.textContent=balance+" doubloon";
-    clearReels(); createReels();
 
     if(spinSound.paused) spinSound.play();
 
-    // Jackpot every 10th spin
-    if(spinCount%10===0){
-        const jpFile=jackpotFiles[Math.floor(Math.random()*jackpotFiles.length)];
-        jackpotSound.src=jpFile; jackpotSound.currentTime=0; jackpotSound.play();
-        spinSound.volume=0;
-        jackpotSound.onended=()=>{spinSound.volume=volumeSlider.value/100;}
-        const jackpotAmount=Math.floor(balance*0.01);
-        balance+=jackpotAmount; balanceDisplay.textContent=balance+" doubloon";
-        showPopup(jackpotPopup,jackpotAmount);
-        highlightGoldenLine();
-        document.body.classList.add('bg-shake'); setTimeout(()=>document.body.classList.remove('bg-shake'),800);
-    }
+    spinReelsAnimation(()=>{
+        // Jackpot every 10th spin
+        if(spinCount%10===0){
+            const jpFile=jackpotFiles[Math.floor(Math.random()*jackpotFiles.length)];
+            jackpotSound.src=jpFile; jackpotSound.currentTime=0; jackpotSound.play();
+            spinSound.volume=0;
+            jackpotSound.onended=()=>{spinSound.volume=1;}
+            const jackpotAmount=Math.floor(balance*0.01);
+            balance+=jackpotAmount; balanceDisplay.textContent=balance+" doubloon";
+            showPopup(jackpotPopup,jackpotAmount);
+            highlightGoldenLine();
+            document.body.classList.add('bg-shake'); setTimeout(()=>document.body.classList.remove('bg-shake'),800);
+        }
 
-    // Regular win every 5th spin
-    if(spinCount%5===0 && spinCount%10!==0){
-        const winAmount=Math.floor(selectedBet*2);
-        balance+=winAmount; balanceDisplay.textContent=balance+" doubloon";
-        showPopup(winPopup,winAmount);
-        highlightGoldenLine();
-    }
+        // Regular win every 5th spin (excluding jackpot)
+        if(spinCount%5===0 && spinCount%10!==0){
+            const winAmount=Math.floor(selectedBet*2);
+            balance+=winAmount; balanceDisplay.textContent=balance+" doubloon";
+            showPopup(winPopup,winAmount);
+            highlightGoldenLine();
+        }
 
-    // Trigger wildcard randomly
-    if(Math.random()<0.15){ 
-        const r=Math.floor(Math.random()*3);
-        triggerWild(r,1);
-    }
+        // Wildcard
+        if(Math.random()<0.15){ triggerWild(400,180); }
 
-    // Mario every 6th spin
-    if(spinCount%6===0) spawnMario();
+        // Mario
+        if(spinCount%6===0) spawnMario();
 
-    setTimeout(()=>{spinning=false;},1200);
+        spinning=false;
+    });
 }
-spinBtn.addEventListener('click',spin);
-createReels();
 </script>
 </body>
 </html>
