@@ -78,197 +78,95 @@ h1{margin:6px 0 0 0;font-size:32px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0
         <div class="chip" data-bet="100">100</div>
         <button id="spinBtn" class="spin-btn">SPIN</button>
       </div>
-      <div class="message" id="messageEl">Press Spin to play</div>
     </div>
   </main>
 </div>
 
-<!-- Popups -->
 <div id="winPopup" class="popup"><img src="https://i.imgur.com/DV24Tzr.jpeg"><div class="amount" id="winAmountEl"></div></div>
 <div id="jackpotPopup" class="popup"><img src="https://i.imgur.com/AmC9sQo.png"><div class="amount" id="jackpotAmountEl"></div></div>
-
-<!-- Wildcard -->
 <img id="wildAnimation" class="wild-animation" src="https://bashof.org/wp-content/uploads/2023/11/OJ_Simpson_1987-e1489501934717.jpg" style="display:none;"/>
 <div id="wildText">SUPER RARE OJ WILDCARD APPEARED</div>
-
-<!-- Mario chaos -->
-<div id="marioContainer">
-  <img id="marioGif" src="mario.gif" style="width:120px;height:120px;">
-</div>
-
+<div id="marioContainer"><img id="marioGif" src="mario.gif" style="width:120px;height:120px;"></div>
 <div id="goldenLinesContainer"></div>
 <div id="chaosContainer"></div>
 
 <script>
-// Symbols
 const symbols=[
 'https://i.imgur.com/KUfSTMv.jpeg','https://i.imgur.com/QTjoPgM.jpeg','https://i.imgur.com/JiEvroq.jpeg',
 'icon 2.png','icon 3.png',
-'https://bashof.org/wp-content/uploads/2023/11/OJ_Simpson_1987-e1489501934717.jpg',
-'tank 1.png'
+'https://bashof.org/wp-content/uploads/2023/11/OJ_Simpson_1987-e1489501934717.jpg','tank 1.png'
 ];
-const reelContainers=[document.getElementById('reel0'),document.getElementById('reel1'),document.getElementById('reel2')];
-let balance=10000;
-let selectedBet=100;
-let spinCount=0;
-let spinning=false;
-
-// Sounds
-const spinSound=new Audio('spin.mp3'); spinSound.loop=false;
-const winSound=new Audio('win.mp3');
+const reels=[document.getElementById('reel0'),document.getElementById('reel1'),document.getElementById('reel2')];
+let balance=10000,selectedBet=100,spinCount=0,spinning=false;
+const spinSound=new Audio('spin.mp3'),winSound=new Audio('win.mp3');
 const jackpotFiles=['jackpot.mp3','jackpot2.mp3','jackpot3.mp3','jackpot4.mp3','jackpot5.mp3'];
 let jackpotSound=new Audio();
-
-// Elements
-const chips=[...document.querySelectorAll('.chip')];
-const spinBtn=document.getElementById('spinBtn');
 const balanceDisplay=document.getElementById('balanceDisplay');
-const winPopup=document.getElementById('winPopup');
-const winAmountEl=document.getElementById('winAmountEl');
-const jackpotPopup=document.getElementById('jackpotPopup');
-const jackpotAmountEl=document.getElementById('jackpotAmountEl');
-const goldenLinesContainer=document.getElementById('goldenLinesContainer');
-const wildAnimation=document.getElementById('wildAnimation');
-const wildText=document.getElementById('wildText');
+const winPopup=document.getElementById('winPopup'),jackpotPopup=document.getElementById('jackpotPopup');
+const winAmountEl=document.getElementById('winAmountEl'),jackpotAmountEl=document.getElementById('jackpotAmountEl');
+const wildAnimation=document.getElementById('wildAnimation'),wildText=document.getElementById('wildText');
 const marioContainer=document.getElementById('marioContainer');
-
-// Chip selection
-chips.forEach(c=>c.addEventListener('click',()=>{chips.forEach(c2=>c2.classList.remove('selected'));c.classList.add('selected');selectedBet=parseInt(c.dataset.bet);}))
 
 function randomSymbol(){return symbols[Math.floor(Math.random()*symbols.length)];}
 
-// Reel spin animation
+function resetReels(){
+    reels.forEach(r=>r.innerHTML='');
+    for(let i=0;i<3;i++){
+        for(let j=0;j<3;j++){
+            const div=document.createElement('div');
+            div.className='cell';
+            div.innerHTML=`<img src='${randomSymbol()}'>`;
+            reels[i].appendChild(div);
+        }
+    }
+}
+resetReels();
+
 function spinReelsAnimation(finalSymbols, callback){
-    const spinDuration=1200;
-    reelContainers.forEach((reel,index)=>{
-        const strip=document.createElement('div'); strip.className='reel-strip';
-        // Add random symbols for spinning
-        for(let i=0;i<6;i++){
-            const cell=document.createElement('div'); cell.className='cell';
-            const img=document.createElement('img'); img.src=randomSymbol();
-            cell.appendChild(img); strip.appendChild(cell);
-        }
-        // Add final symbols for the outcome
-        for(let row=0;row<3;row++){
-            const cell=document.createElement('div'); cell.className='cell';
-            const img=document.createElement('img'); img.src=finalSymbols[index][row];
-            cell.appendChild(img); strip.appendChild(cell);
-        }
-        reel.innerHTML=''; reel.appendChild(strip);
-        const finalOffset=-(360*6); // shift to final symbols
-        strip.style.transition=`transform ${spinDuration/1000}s cubic-bezier(0.25,1,0.5,1)`;
-        requestAnimationFrame(()=>{strip.style.transform=`translateY(${finalOffset}px)`;});
+    reels.forEach((reel,index)=>{
+        const strip=document.createElement('div');strip.className='reel-strip';
+        for(let i=0;i<6;i++){const c=document.createElement('div');c.className='cell';c.innerHTML=`<img src='${randomSymbol()}'>`;strip.appendChild(c);}
+        for(let r=0;r<3;r++){const c=document.createElement('div');c.className='cell';c.innerHTML=`<img src='${finalSymbols[index][r]}'>`;strip.appendChild(c);}
+        reel.innerHTML='';reel.appendChild(strip);
+        requestAnimationFrame(()=>strip.style.transform='translateY(-2160px)');
     });
-    setTimeout(callback, spinDuration+100);
+    setTimeout(callback,1400);
 }
 
-function showPopup(popup, amount){
-    const rect=reelContainers[1].children[1].getBoundingClientRect();
-    popup.style.left=(rect.left+rect.width/2+window.scrollX)+'px';
-    popup.style.top=(rect.top+rect.height/2+window.scrollY)+'px';
+function showPopup(popup,amount){
+    popup.style.left='50%';popup.style.top='50%';
     popup.classList.add('show');
     popup.querySelector('.amount').textContent=amount+" doubloon";
     setTimeout(()=>popup.classList.remove('show'),2000);
 }
 
-// Golden line horizontal only
-function drawGoldenLine(){
-    const rect0=reelContainers[0].children[1].getBoundingClientRect();
-    const rect2=reelContainers[2].children[1].getBoundingClientRect();
-    const line=document.createElement('div');
-    line.className='golden-line';
-    line.style.top=(rect0.top+rect0.height/2+window.scrollY)+'px';
-    line.style.left=rect0.left+'px';
-    line.style.width=(rect2.right-rect0.left)+'px';
-    goldenLinesContainer.appendChild(line);
-    setTimeout(()=>goldenLinesContainer.removeChild(line),2000);
-}
-
-// Wildcard animation
-function triggerWild(x,y){
-    wildAnimation.style.display="block"; wildAnimation.style.left=x+"px"; wildAnimation.style.top="0px";
-    wildText.style.display="block"; wildText.style.left=x+"px"; wildText.style.top=(y+130)+"px";
-    let posY=0;
-    const interval=setInterval(()=>{
-        posY+=10; wildAnimation.style.top=posY+"px";
-        if(posY>=y){clearInterval(interval);setTimeout(()=>{wildAnimation.style.display="none"; wildText.style.display="none";},1500);}
-    },20);
-}
-
-// Mario animation
-function spawnMario(){
-    const topPos=100+Math.random()*(window.innerHeight-200);
-    marioContainer.style.top=topPos+"px"; marioContainer.style.left="-200px"; marioContainer.style.display="block";
-    let pos=-200;
-    const interval=setInterval(()=>{
-        pos+=15; marioContainer.style.left=pos+"px";
-        if(pos>window.innerWidth+200){clearInterval(interval); marioContainer.style.display="none";}
-    },20);
-}
+function triggerWild(){wildAnimation.style.display="block";wildText.style.display="block";setTimeout(()=>{wildAnimation.style.display="none";wildText.style.display="none";},1500);}
+function spawnMario(){marioContainer.style.display='block';let x=-200;const i=setInterval(()=>{x+=15;marioContainer.style.left=x+'px';if(x>window.innerWidth+200){clearInterval(i);marioContainer.style.display='none';}},20);}
 
 function spin(){
-    if(spinning) return;
-    if(balance<selectedBet){alert('Not enough balance!'); return;}
+    if(spinning)return;
+    if(balance<selectedBet){alert('Not enough balance!');return;}
     spinning=true;
     spinCount++;
     balance-=selectedBet;
     balanceDisplay.textContent=balance+" doubloon";
 
-    // Determine symbols
-    let finalSymbols=[[],[],[]];
-    for(let col=0;col<3;col++){
-        for(let row=0;row<3;row++){
-            finalSymbols[col][row]=randomSymbol();
-        }
-    }
-
-    // Force win every 5th spin
-    if(spinCount%5===0){
-        finalSymbols[0][1]=symbols[0]; finalSymbols[1][1]=symbols[0]; finalSymbols[2][1]=symbols[0];
-    }
-
-    // Force jackpot every 10th spin
-    let jackpot=false;
-    if(spinCount%10===0){
-        jackpot=true;
-        finalSymbols[0][1]=symbols[5]; finalSymbols[1][1]=symbols[5]; finalSymbols[2][1]=symbols[5];
-    }
-
-    // Spin animation
-    spinReelsAnimation(finalSymbols, ()=>{
-        // Wildcard animation if present
-        finalSymbols.forEach((col,index)=>{
-            col.forEach((sym,row)=>{
-                if(sym===symbols[5]) triggerWild(reelContainers[index].children[row].getBoundingClientRect().left, reelContainers[index].children[row].getBoundingClientRect().top);
-            });
-        });
-
-        // Draw golden line for horizontal win
-        if(spinCount%5===0 || jackpot) drawGoldenLine();
-
-        // Sound & popups
-        if(jackpot){
-            const file=jackpotFiles[Math.floor(Math.random()*jackpotFiles.length)];
-            jackpotSound.src=file; jackpotSound.play();
-            showPopup(jackpotPopup, Math.floor(balance*0.01));
-            document.body.classList.add('bg-shake');
-            setTimeout(()=>document.body.classList.remove('bg-shake'),1800);
-        } else if(spinCount%5===0){
-            winSound.play();
-            showPopup(winPopup, selectedBet*5);
-        }
-
-        balanceDisplay.textContent=balance+" doubloon";
+    let final=[[],[],[]];
+    for(let i=0;i<3;i++){for(let j=0;j<3;j++){final[i][j]=randomSymbol();}}
+    if(spinCount%5===0){final[0][1]=symbols[0];final[1][1]=symbols[0];final[2][1]=symbols[0];}
+    let jackpot=false;if(spinCount%10===0){jackpot=true;final[0][1]=symbols[5];final[1][1]=symbols[5];final[2][1]=symbols[5];}
+    spinReelsAnimation(final,()=>{
+        if(jackpot){const file=jackpotFiles[Math.floor(Math.random()*jackpotFiles.length)];
+            jackpotSound.src=file;jackpotSound.play();showPopup(jackpotPopup,Math.floor(balance*0.01));
+            document.body.classList.add('bg-shake');setTimeout(()=>document.body.classList.remove('bg-shake'),1800);}
+        else if(spinCount%5===0){winSound.play();showPopup(winPopup,selectedBet*5);}
         spinning=false;
     });
-
-    // Mario every 5th spin
-    if(spinCount%5===0) spawnMario();
+    if(spinCount%5===0)spawnMario();
 }
 
-// Event
-spinBtn.addEventListener('click', ()=>{
-    if(spinSound.paused) spinSound.play();
+document.getElementById('spinBtn').addEventListener('click',()=>{
+    if(spinSound.paused)spinSound.play();
     spin();
 });
 </script>
