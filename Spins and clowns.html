@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Joke Slot Game</title>
+<title>Clown Slot Game</title>
 <style>
 body {
   margin: 0;
@@ -65,10 +65,23 @@ body {
   color: #ff0;
   text-shadow: 0 0 10px red, 0 0 20px orange;
 }
+#jackpotPopup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: none;
+  z-index: 10;
+  pointer-events: none;
+}
+#jackpotPopup img {
+  width: 500px;
+  height: auto;
+}
 </style>
 </head>
 <body>
-<h1>Joke Slot Game</h1>
+<h1>Clown Slot Game</h1>
 <div id="slot-container">
   <div class="slot-cell"></div>
   <div class="slot-cell"></div>
@@ -82,48 +95,56 @@ body {
 </div>
 <button id="spinButton">SPIN</button>
 <div id="message"></div>
+<div id="jackpotPopup"><img src="https://peacejug.github.io/degenerateclowns/Jackpot%20sign.png" alt="Jackpot!" /></div>
 
 <script>
 const icons = [
-  'https://i.imgur.com/KUfSTMv.jpeg',
-  'https://i.imgur.com/QTjoPgM.jpeg',
-  'https://i.imgur.com/JiEvroq.jpeg',
-  'https://i.imgur.com/3X3Z3Ch.png',
-  'https://i.imgur.com/7ybhhHz.png',
-  'https://i.imgur.com/0XQbX3G.png'
+  'https://peacejug.github.io/degenerateclowns/KUfSTMv.jpeg',
+  'https://peacejug.github.io/degenerateclowns/QTjoPgM.jpeg',
+  'https://peacejug.github.io/degenerateclowns/JiEvroq.jpeg',
+  'https://peacejug.github.io/degenerateclowns/tank%201.png',
+  'https://peacejug.github.io/degenerateclowns/icon%202.png',
+  'https://peacejug.github.io/degenerateclowns/icon%203.png'
 ];
+
 const slotCells = document.querySelectorAll('.slot-cell');
 const spinButton = document.getElementById('spinButton');
 const message = document.getElementById('message');
+const jackpotPopup = document.getElementById('jackpotPopup');
 
-// Updated sounds from your repository
 const spinSound = new Audio('https://peacejug.github.io/degenerateclowns/spin.mp3');
 const winSound = new Audio('https://peacejug.github.io/degenerateclowns/win.mp3');
 const jackpotSound = new Audio('https://peacejug.github.io/degenerateclowns/jackpot.mp3');
+jackpotSound.volume = 0.5; // reduce volume
 
 function getRandomIcon() { return icons[Math.floor(Math.random() * icons.length)]; }
+
+function showJackpot(){
+  jackpotPopup.style.display='block';
+  setTimeout(()=>{ jackpotPopup.style.display='none'; },1500);
+}
 
 function checkWin(grid){
   slotCells.forEach(cell=>cell.classList.remove('win'));
   for(let r=0;r<3;r++){
     if(grid[r*3]===grid[r*3+1] && grid[r*3+1]===grid[r*3+2]){
       [slotCells[r*3],slotCells[r*3+1],slotCells[r*3+2]].forEach(c=>c.classList.add('win'));
-      if(grid[r*3]<3){ jackpotSound.play(); return 'JACKPOT!'; } else { winSound.play(); return 'You win!'; }
+      if(grid[r*3]<3){ jackpotSound.play(); showJackpot(); return 'JACKPOT!'; } else { winSound.play(); return 'You win!'; }
     }
   }
   for(let c=0;c<3;c++){
     if(grid[c]===grid[c+3] && grid[c+3]===grid[c+6]){
       [slotCells[c],slotCells[c+3],slotCells[c+6]].forEach(cel=>cel.classList.add('win'));
-      if(grid[c]<3){ jackpotSound.play(); return 'JACKPOT!'; } else { winSound.play(); return 'You win!'; }
+      if(grid[c]<3){ jackpotSound.play(); showJackpot(); return 'JACKPOT!'; } else { winSound.play(); return 'You win!'; }
     }
   }
   if(grid[0]===grid[4] && grid[4]===grid[8]){
     [slotCells[0],slotCells[4],slotCells[8]].forEach(c=>c.classList.add('win'));
-    if(grid[0]<3){ jackpotSound.play(); return 'JACKPOT!'; } else { winSound.play(); return 'You win!'; }
+    if(grid[0]<3){ jackpotSound.play(); showJackpot(); return 'JACKPOT!'; } else { winSound.play(); return 'You win!'; }
   }
   if(grid[2]===grid[4] && grid[4]===grid[6]){
     [slotCells[2],slotCells[4],slotCells[6]].forEach(c=>c.classList.add('win'));
-    if(grid[2]<3){ jackpotSound.play(); return 'JACKPOT!'; } else { winSound.play(); return 'You win!'; }
+    if(grid[2]<3){ jackpotSound.play(); showJackpot(); return 'JACKPOT!'; } else { winSound.play(); return 'You win!'; }
   }
   return 'Try again';
 }
