@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Joke Slot Game</title>
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background: #222;
+  color: white;
+}
+#slot-container {
+  display: grid;
+  grid-template-columns: repeat(3, 100px);
+  grid-template-rows: repeat(3, 100px);
+  gap: 10px;
+  justify-content: center;
+  margin-top: 50px;
+}
+.slot-cell {
+  width: 100px;
+  height: 100px;
+  border: 2px solid #fff;
+  border-radius: 10px;
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.slot-cell img {
+  max-width: 90%;
+  max-height: 90%;
+}
+#spinButton {
+  margin-top: 30px;
+  padding: 15px 30px;
+  font-size: 24px;
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  background-color: #f0c000;
+  color: #222;
+}
+#message {
+  margin-top: 20px;
+  font-size: 24px;
+  min-height: 30px;
+}
+</style>
+</head>
+<body>
+<h1>Joke Slot Game</h1>
+<div id="slot-container">
+  <div class="slot-cell"></div>
+  <div class="slot-cell"></div>
+  <div class="slot-cell"></div>
+  <div class="slot-cell"></div>
+  <div class="slot-cell"></div>
+  <div class="slot-cell"></div>
+  <div class="slot-cell"></div>
+  <div class="slot-cell"></div>
+  <div class="slot-cell"></div>
+</div>
+<button id="spinButton">SPIN</button>
+<div id="message"></div>
+
+<script>
+const icons = [
+  'https://i.imgur.com/KUfSTMv.jpeg',
+  'https://i.imgur.com/QTjoPgM.jpeg',
+  'https://i.imgur.com/JiEvroq.jpeg',
+  'https://i.imgur.com/3X3Z3Ch.png', // cherry placeholder
+  'https://i.imgur.com/7ybhhHz.png', // bell placeholder
+  'https://i.imgur.com/0XQbX3G.png'  // diamond placeholder
+];
+
+const slotCells = document.querySelectorAll('.slot-cell');
+const spinButton = document.getElementById('spinButton');
+const message = document.getElementById('message');
+
+// Sounds
+const spinSound = new Audio('https://peacejug.github.io/CaedrelPractice/spin.mp3');
+const winSound = new Audio('https://peacejug.github.io/CaedrelPractice/win.mp3');
+const jackpotSound = new Audio('https://peacejug.github.io/CaedrelPractice/jackpot.mp3');
+
+function getRandomIcon() {
+  return icons[Math.floor(Math.random() * icons.length)];
+}
+
+function checkWin(grid){
+  // Check rows
+  for(let r=0;r<3;r++){
+    if(grid[r*3]===grid[r*3+1] && grid[r*3+1]===grid[r*3+2]){
+      if(grid[r*3]<3){
+        jackpotSound.play();
+        return 'JACKPOT!';
+      } else {
+        winSound.play();
+        return 'You win!';
+      }
+    }
+  }
+  // Check columns
+  for(let c=0;c<3;c++){
+    if(grid[c]===grid[c+3] && grid[c+3]===grid[c+6]){
+      if(grid[c]<3){
+        jackpotSound.play();
+        return 'JACKPOT!';
+      } else {
+        winSound.play();
+        return 'You win!';
+      }
+    }
+  }
+  // Check diagonals
+  if(grid[0]===grid[4] && grid[4]===grid[8]){
+    if(grid[0]<3){ jackpotSound.play(); return 'JACKPOT!'; } else { winSound.play(); return 'You win!'; }
+  }
+  if(grid[2]===grid[4] && grid[4]===grid[6]){
+    if(grid[2]<3){ jackpotSound.play(); return 'JACKPOT!'; } else { winSound.play(); return 'You win!'; }
+  }
+  return 'Try again';
+}
+
+spinButton.addEventListener('click', ()=>{
+  spinSound.play();
+  let grid = [];
+  // Animate spin (simple flicker)
+  let flickerCount = 10;
+  const flickerInterval = setInterval(()=>{
+    slotCells.forEach(cell=>{ cell.querySelector('img')?.remove(); let img=document.createElement('img'); img.src=getRandomIcon(); cell.appendChild(img); });
+    flickerCount--;
+    if(flickerCount<=0){
+      clearInterval(flickerInterval);
+      // Final random grid
+      slotCells.forEach((cell,i)=>{
+        let iconIndex=Math.floor(Math.random()*icons.length);
+        grid[i]=iconIndex;
+        cell.querySelector('img').src=icons[iconIndex];
+      });
+      const result = checkWin(grid);
+      message.innerText=result;
+    }
+  },50);
+});
+</script>
+</body>
+</html>
