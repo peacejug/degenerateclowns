@@ -131,12 +131,24 @@ function createReels(){
     }
   }
 }
-function showPopup(popup,amount){
-  popup.classList.add('show');popup.querySelector('.amount').textContent=amount+" doubloon";
-  setTimeout(()=>popup.classList.remove('show'),2000);
+function getMiddleCellPosition() {
+    const middleReel = reelContainers[1]; // middle column
+    const middleCell = middleReel.children[1]; // middle row
+    const rect = middleCell.getBoundingClientRect();
+    return {
+        x: rect.left + rect.width/2 + window.scrollX,
+        y: rect.top + rect.height/2 + window.scrollY
+    };
 }
-function highlightWinningSymbols(){reelContainers.forEach(r=>[...r.children].forEach(c=>c.style.boxShadow='0 0 30px 8px gold,0 0 20px 4px yellow'));setTimeout(()=>reelContainers.forEach(r=>[...r.children].forEach(c=>c.style.boxShadow='')),1800);}
-function playJackpot(){let f=jackpotFiles[Math.floor(Math.random()*jackpotFiles.length)];jackpotSound=new Audio(f);spinSound.volume=0;jackpotSound.play();jackpotSound.onended=()=>{spinSound.volume=1;}}
+
+function showPopup(popup, amount) {
+    const pos = getMiddleCellPosition();
+    popup.style.left = pos.x + 'px';
+    popup.style.top = pos.y + 'px';
+    popup.classList.add('show');
+    popup.querySelector('.amount').textContent = amount + " doubloon";
+    setTimeout(()=>popup.classList.remove('show'), 2000);
+}
 
 // Wildcard animation
 function triggerWild(x,y){
@@ -195,3 +207,4 @@ createReels();
 </script>
 </body>
 </html>
+
