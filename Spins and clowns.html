@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Clown Slot Game v11</title>
+<title>Clown Slot Game Realistic</title>
 <style>
 :root{--accent1:#ffcc00;--accent2:#ff6600;--text:#f5efe6;}
 html,body{margin:0;padding:0;height:100%;font-family:Arial,sans-serif;background:#111;color:var(--text);}
@@ -18,33 +18,17 @@ body{background:url('https://i.imgur.com/oXURWxC.png') no-repeat center center/c
 .main{flex:1;display:flex;flex-direction:column;align-items:center;gap:12px;min-width:300px;}
 h1{margin:6px 0 0 0;font-size:28px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0.6);}
 .slot-wrap{width:min(780px,96vw);display:flex;flex-direction:column;align-items:center;gap:10px;position:relative;}
-.slot-frame{position:relative;background:linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.6));padding:12px;border-radius:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;}
-.cell{background:linear-gradient(180deg,#000,#111);border-radius:10px;display:flex;justify-content:center;align-items:center;overflow:hidden;border:2px solid rgba(255,255,255,0.04);aspect-ratio:1/1;transition:transform .18s, box-shadow .18s;position:relative;}
-.cell img{max-width:92%;max-height:92%;display:block;border-radius:8px;pointer-events:none;}
-.cell.win{transform:scale(1.06);box-shadow:0 0 30px rgba(255,220,0,0.9),0 0 90px rgba(255,120,0,0);}
-.wild-fly{position:absolute;z-index:999;pointer-events:none;animation:flywild 1s ease forwards;}
-@keyframes flywild{
-  0%{transform:translateY(-150px) rotate(-60deg) scale(0.5);opacity:0;}
-  30%{opacity:1;transform:translateY(-80px) rotate(10deg) scale(1.1);}
-  60%{transform:translateY(-30px) rotate(-10deg) scale(0.95);}
-  100%{transform:translateY(0) rotate(0deg) scale(1);}
-}
-@keyframes lightning{
-  0%{opacity:0;transform:scaleY(0);}
-  30%{opacity:1;transform:scaleY(1);}
-  60%{opacity:1;transform:scaleY(1);}
-  100%{opacity:0;transform:scaleY(0);}
-}
-.lightning{position:absolute;width:6px;height:100%;background:linear-gradient(to bottom, #fff, #fffc);z-index:998;animation:lightning 0.3s ease-in-out forwards;pointer-events:none;}
+.slot-frame{position:relative;background:linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.6));padding:12px;border-radius:14px;display:flex;gap:10px;}
+.reel-container{width:100px;overflow:hidden;height:100px;position:relative;background:linear-gradient(180deg,#111,#000);border-radius:10px;}
+.reel-strip{display:flex;flex-direction:column;transition:transform 0.8s cubic-bezier(0.25,1,0.5,1);}
+.cell{width:100px;height:100px;display:flex;justify-content:center;align-items:center;overflow:hidden;}
+.cell img{max-width:90%;max-height:90%;border-radius:8px;pointer-events:none;}
 .controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;width:100%;}
 .bet-chips{display:flex;gap:8px;}
 .chip{padding:8px 12px;border-radius:10px;background:rgba(0,0,0,0.45);cursor:pointer;border:2px solid rgba(255,255,255,0.04);font-weight:700;}
 .chip.selected{outline:3px solid rgba(255,204,0,0.12);transform:translateY(-3px);}
 .spin-btn{padding:12px 26px;border-radius:12px;background:linear-gradient(135deg,var(--accent1),var(--accent2));color:#222;font-size:18px;font-weight:800;border:none;cursor:pointer;box-shadow:0 8px 28px rgba(255,102,0,0.14);}
 .spin-btn:disabled{opacity:0.5;cursor:not-allowed;}
-.info-line{font-size:14px;color:rgba(255,255,255,0.9);text-align:center;}
-.message{font-size:16px;color:var(--accent1);min-height:28px;text-align:center;text-shadow:0 0 8px rgba(255,120,0,0.15);}
-#lineCanvas{position:absolute;left:12px;top:12px;pointer-events:none;z-index:5;}
 .popup{position:absolute;transform:translate(-50%,-50%) scale(.95);z-index:9999;opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;text-align:center;color:#fff;}
 .popup.show{opacity:1;transform:translate(-50%,-50%) scale(1);}
 .popup img{max-width:70%;border-radius:10px;box-shadow:0 30px 80px rgba(0,0,0,0.7);}
@@ -64,33 +48,24 @@ h1{margin:6px 0 0 0;font-size:28px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0
 <div class="payout-row"><span>3 Clown Faces</span><strong>50×</strong></div>
 <div class="payout-row"><span>3 Other Symbols</span><strong>10×</strong></div>
 <div class="payout-row"><span>2 Wilds + 1 Clown</span><strong>25×</strong></div>
-<div class="payout-row"><span>2 Wilds + anything</span><strong>5×</strong></div>
-<div class="payout-row"><span>1 Wild + 2 matching</span><strong>15×</strong></div>
-<div class="balance">Balance: <div id="balanceDisplay" style="font-size:18px;margin-top:6px">1000 doubloon</div></div>
-<div class="jackpotBox" id="jackpotBox" title="Progressive Jackpot">Progressive Jackpot:<div id="jackpotDisplay" style="font-size:18px;margin-top:6px">10000</div></div>
+<div class="balance">Balance: <div id="balanceDisplay">1000 doubloon</div></div>
+<div class="jackpotBox">Progressive Jackpot:<div id="jackpotDisplay">10000</div></div>
 </aside>
 <main class="main" role="main">
 <h1>Clown Slot Game</h1>
-<div class="slot-wrap">
-<div class="slot-frame" id="slotFrame" aria-live="polite" aria-label="Slot machine">
-<div class="cell" data-i="0"></div>
-<div class="cell" data-i="1"></div>
-<div class="cell" data-i="2"></div>
-<div class="cell" data-i="3"></div>
-<div class="cell" data-i="4"></div>
-<div class="cell" data-i="5"></div>
-<div class="cell" data-i="6"></div>
-<div class="cell" data-i="7"></div>
-<div class="cell" data-i="8"></div>
-<canvas id="lineCanvas"></canvas>
+<div class="slot-wrap" id="slotWrap">
+<div class="slot-frame" id="slotFrame">
+<div class="reel-container" id="reel0"></div>
+<div class="reel-container" id="reel1"></div>
+<div class="reel-container" id="reel2"></div>
 </div>
 <div class="controls">
-<div class="bet-chips" role="toolbar" aria-label="Choose bet">
+<div class="bet-chips">
 <div class="chip" data-bet="10">10</div>
 <div class="chip" data-bet="50">50</div>
 <div class="chip selected" data-bet="100">100</div>
 </div>
-<button id="spinBtn" class="spin-btn" aria-label="Spin">SPIN</button>
+<button id="spinBtn" class="spin-btn">SPIN</button>
 </div>
 <div class="message" id="messageEl">Press Spin to play</div>
 </div>
@@ -103,28 +78,7 @@ h1{margin:6px 0 0 0;font-size:28px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0
 <div id="jackpotPopup" class="popup"><img src="https://i.imgur.com/AmC9sQo.png" alt="Jackpot"><div class="amount" id="jackpotAmountEl"></div></div>
 
 <script>
-const slotFrame=document.getElementById('slotFrame');
-const cells=[...slotFrame.children].filter(c=>c.tagName==='DIV');
-const spinBtn=document.getElementById('spinBtn');
-const balanceDisplay=document.getElementById('balanceDisplay');
-const jackpotDisplay=document.getElementById('jackpotDisplay');
-const messageEl=document.getElementById('messageEl');
-const winPopup=document.getElementById('winPopup');
-const winAmountEl=document.getElementById('winAmountEl');
-const jackpotPopup=document.getElementById('jackpotPopup');
-const jackpotAmountEl=document.getElementById('jackpotAmountEl');
-const lineCanvas=document.getElementById('lineCanvas');
-const ctx=lineCanvas.getContext('2d');
-let balance=parseInt(localStorage.getItem('balance'))||1000;
-balanceDisplay.textContent=balance+' doubloon';
-let selectedBet=100;
-let isSpinning=false;
-const jackpot=10000;
-let spinSound=new Audio('spin.mp3'); spinSound.loop=false;
-const winSound=new Audio('win.mp3');
-const jackpotFiles=['jackpot.mp3','jackpot2.mp3','jackpot3.mp3','jackpot4.mp3','jackpot5.mp3'];
-let jackpotSound=new Audio();
-const chips=[...document.querySelectorAll('.chip')];
+// --- SYMBOLS
 const symbols=[
 'https://i.imgur.com/KUfSTMv.jpeg',
 'https://i.imgur.com/QTjoPgM.jpeg',
@@ -135,137 +89,99 @@ const symbols=[
 'tank 1.png'
 ];
 
+// --- REEL STRIPS
+const reels=[
+[0,1,2,3,4,5,6,0,1,3,2],
+[1,2,0,3,4,5,6,1,0,4],
+[2,0,1,3,5,6,4,2,0,1]
+];
+
+const reelContainers=[document.getElementById('reel0'),document.getElementById('reel1'),document.getElementById('reel2')];
+let balance=parseInt(localStorage.getItem('balance'))||1000;
+document.getElementById('balanceDisplay').textContent=balance+" doubloon";
+let selectedBet=100;
+const chips=[...document.querySelectorAll('.chip')];
 chips.forEach(c=>c.addEventListener('click',()=>{
 chips.forEach(c2=>c2.classList.remove('selected'));
 c.classList.add('selected');
 selectedBet=parseInt(c.dataset.bet);
 }));
+const spinBtn=document.getElementById('spinBtn');
+const messageEl=document.getElementById('messageEl');
+const winPopup=document.getElementById('winPopup');
+const winAmountEl=document.getElementById('winAmountEl');
+const jackpotPopup=document.getElementById('jackpotPopup');
+const jackpotAmountEl=document.getElementById('jackpotAmountEl');
+let isSpinning=false;
+const spinSound=new Audio('spin.mp3'); spinSound.loop=false;
+const winSound=new Audio('win.mp3');
+const jackpotFiles=['jackpot.mp3','jackpot2.mp3','jackpot3.mp3','jackpot4.mp3','jackpot5.mp3'];
+let jackpotSound=new Audio();
 
-function resizeCanvas(){lineCanvas.width=slotFrame.offsetWidth;lineCanvas.height=slotFrame.offsetHeight;}
-window.addEventListener('resize',resizeCanvas);
-resizeCanvas();
-
-function drawLine(wins){
-ctx.clearRect(0,0,lineCanvas.width,lineCanvas.height);
-ctx.strokeStyle='yellow';ctx.lineWidth=5;
-wins.forEach(win=>{
-const [a,b,c]=win.cells.map(i=>cells[i]);
-ctx.beginPath();
-ctx.moveTo(a.offsetLeft+a.offsetWidth/2,a.offsetTop+a.offsetHeight/2);
-ctx.lineTo(c.offsetLeft+c.offsetWidth/2,c.offsetTop+c.offsetHeight/2);
-ctx.stroke();
-});
-}
-
-function lightningWild(cell){
-const lightning=document.createElement('div');
-lightning.classList.add('lightning');
-const rect=cell.getBoundingClientRect();
-const parent=slotFrame.getBoundingClientRect();
-lightning.style.left=(rect.left-parent.left+rect.width/2-3)+'px';
-slotFrame.appendChild(lightning);
-setTimeout(()=>{
-lightning.remove();
-animateWild(cell);
-},300);
-}
-
-function animateWild(cell){
-const wildFly=document.createElement('img');
-wildFly.src=symbols[5];
-wildFly.classList.add('wild-fly');
-slotFrame.appendChild(wildFly);
-const rect=cell.getBoundingClientRect();
-const parentRect=slotFrame.getBoundingClientRect();
-wildFly.style.left=(rect.left-parentRect.left)+'px';
-wildFly.style.top=(rect.top-parentRect.top-150)+'px';
-setTimeout(()=>{wildFly.remove();},1000);
-}
+function getRandomStart(reel){return Math.floor(Math.random()*reel.length);}
+function createReelStrip(reel,start){const strip=document.createElement('div');strip.classList.add('reel-strip');for(let i=0;i<reel.length;i++){const cell=document.createElement('div');cell.classList.add('cell');const idx=(start+i)%reel.length;cell.innerHTML=`<img src="${symbols[reel[idx]]}" alt="symbol">`;strip.appendChild(cell);}return strip;}
 
 function spin(){
 if(balance<=0){messageEl.textContent="AHAHAH CLOWN";return;}
 if(isSpinning)return;
-isSpinning=true;
-messageEl.textContent="Spinning...";
+isSpinning=true;messageEl.textContent="Spinning...";
 if(spinSound.paused) spinSound.play();
 
-// RTP control ~95%
-if(Math.random()>0.95){ // rare jackpot event
-  result=[5,5,5,5,5,5,5,5,5];
-} else {
-  var result=[];
-  const options=[0,1,2,3,4,6];
-  for(let row=0;row<3;row++){
-    const mainSym=options[Math.floor(Math.random()*options.length)];
-    for(let col=0;col<3;col++){
-      const idx=row*3+col;
-      if(Math.random()<0.05) result[idx]=5;
-      else result[idx]=mainSym;
-      cells[idx].classList.remove('win');
-      cells[idx].innerHTML=`<img src="${symbols[result[idx]]}" alt="symbol">`;
-      if(result[idx]===5) lightningWild(cells[idx]);
-    }
-  }
+const results=[];
+
+for(let r=0;r<3;r++){
+const start=getRandomStart(reels[r]);
+const strip=createReelStrip(reels[r],start);
+reelContainers[r].innerHTML='';reelContainers[r].appendChild(strip);
+// Animate transform
+setTimeout(()=>{
+strip.style.transform='translateY(-'+(strip.children.length-3)*100+'px)';
+},50);
+results.push([strip,start]);
 }
 
 setTimeout(()=>{
-let multiplier=Math.random()*0.95+0.05;
+// Evaluate win
 let winAmount=0;
-let wins=[];
-const middleRow=[3,4,5];
-if(middleRow.every(i=>result[i]===5)){
-winAmount=jackpot;
-balance+=winAmount;
-// Random jackpot sound
+let jackpotHit=false;
+results.forEach(([strip,start],r)=>{
+for(let row=0;row<3;row++){
+const idx=(start+row)%reels[r].length;
+const val=reels[r][idx];
+if(val===5) jackpotHit=true;
+}
+});
+if(jackpotHit){winAmount=10000;balance+=winAmount;
 const jpFile=jackpotFiles[Math.floor(Math.random()*jackpotFiles.length)];
 jackpotSound.src=jpFile; jackpotSound.volume=0.5; jackpotSound.currentTime=0; jackpotSound.play();
 spinSound.volume=0;
-// Show jackpot popup centered over middle cell
-const midCell=cells[4].getBoundingClientRect();
+const midCell=reelContainers[1].getBoundingClientRect();
 const parent=slotFrame.getBoundingClientRect();
 jackpotPopup.style.left=(midCell.left-parent.left+midCell.width/2)+"px";
 jackpotPopup.style.top=(midCell.top-parent.top+midCell.height/2)+"px";
 jackpotAmountEl.textContent=winAmount+" doubloon";
 jackpotPopup.classList.add('show');
-// Shake background
 document.body.classList.add('bg-shake');
-setTimeout(()=>{
-jackpotPopup.classList.remove('show');
-document.body.classList.remove('bg-shake');
-spinSound.volume=1;
-},1800);
-} else {
-// Normal row wins
-for(let row=0;row<3;row++){
-const idxs=[row*3,row*3+1,row*3+2];
-const vals=idxs.map(i=>result[i]);
-const main=vals.find(v=>v!==5);
-if(vals.every(v=>v===main || v===5)){
-winAmount+=Math.round(selectedBet*10*multiplier);
-wins.push({cells:idxs});
-}
-}
-if(winAmount>0){
-balance+=winAmount;
-winSound.currentTime=0; winSound.play();
-const midCell=cells[4].getBoundingClientRect();
+setTimeout(()=>{jackpotPopup.classList.remove('show');document.body.classList.remove('bg-shake');spinSound.volume=1;},1800);
+}else{
+const multiplier=Math.random()*0.95+0.05;
+winAmount=Math.round(selectedBet*10*multiplier);
+if(winAmount>0){balance+=winAmount;winSound.currentTime=0;winSound.play();
+const midCell=reelContainers[1].getBoundingClientRect();
 const parent=slotFrame.getBoundingClientRect();
 winPopup.style.left=(midCell.left-parent.left+midCell.width/2)+"px";
 winPopup.style.top=(midCell.top-parent.top+midCell.height/2)+"px";
 winAmountEl.textContent=winAmount+" doubloon";
 winPopup.classList.add('show');
-setTimeout(()=>winPopup.classList.remove('show'),1800);
+setTimeout(()=>winPopup.classList.remove('show'),1800);}
 }
-}
-balanceDisplay.textContent=balance+" doubloon";
+document.getElementById('balanceDisplay').textContent=balance+" doubloon";
 localStorage.setItem('balance',balance);
-drawLine(wins);
 isSpinning=false;
-},800);
+},1200);
 }
 
 spinBtn.addEventListener('click',spin);
-slotFrame.addEventListener('click',spin);
 </script>
 </body>
 </html>
