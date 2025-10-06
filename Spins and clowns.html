@@ -17,9 +17,9 @@ body.bg-shake{animation:shakeBG 0.6s ease-in-out;}
 h1{margin:6px 0 0 0;font-size:32px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0.6);}
 .slot-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;position:relative;}
 .slot-frame{position:relative;background:linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.6));padding:20px;border-radius:14px;display:flex;gap:12px;overflow:hidden;}
-.reel-container{width:360px;height:1080px;overflow:hidden;background:linear-gradient(180deg,#111,#000);border-radius:10px;position:relative;}
+.reel-container{width:360px;height:360px;overflow:hidden;background:linear-gradient(180deg,#111,#000);border-radius:10px;position:relative;}
 .reel-strip{display:flex;flex-direction:column;transition:transform 1s cubic-bezier(0.25,1,0.5,1);}
-.cell{width:360px;height:360px;display:flex;justify-content:center;align-items:center;transition:box-shadow 0.2s;}
+.cell{width:360px;height:120px;display:flex;justify-content:center;align-items:center;transition:box-shadow 0.2s;}
 .cell img{max-width:90%;max-height:90%;border-radius:8px;pointer-events:none;}
 .controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;width:100%;}
 .chip{padding:10px 16px;border-radius:12px;background:rgba(0,0,0,0.45);cursor:pointer;border:2px solid rgba(255,255,255,0.04);font-weight:700;}
@@ -100,7 +100,6 @@ let spinning=false;
 
 // Sounds
 const spinSound=new Audio('spin.mp3'); spinSound.loop=true; spinSound.volume=0.3; spinSound.play();
-const winSound=new Audio('win.mp3');
 const jackpotFiles=['jackpot.mp3','jackpot2.mp3','jackpot3.mp3','jackpot4.mp3','jackpot5.mp3'];
 let jackpotSound=new Audio();
 
@@ -125,21 +124,25 @@ chips.forEach(c=>c.addEventListener('click',()=>{
   selectedBet=parseInt(c.dataset.bet);
 }));
 
-function randomSymbol(){return symbols[Math.floor(Math.random()*symbols.length)];}
-function clearReels(){reelContainers.forEach(r=>r.innerHTML='');}
+// Reel setup
 function createReels(){
+  clearReels();
   for(let i=0;i<3;i++){
-    for(let j=0;j<3;j++){
-      const cell=document.createElement('div');cell.className='cell';
-      const img=document.createElement('img');img.src=randomSymbol();
-      cell.appendChild(img);reelContainers[i].appendChild(cell);
+    const strip=document.createElement('div'); strip.className='reel-strip';
+    for(let j=0;j<15;j++){
+      const cell=document.createElement('div'); cell.className='cell';
+      const img=document.createElement('img'); img.src=symbols[Math.floor(Math.random()*symbols.length)];
+      cell.appendChild(img); strip.appendChild(cell);
     }
+    reelContainers[i].appendChild(strip);
   }
 }
 
+function clearReels(){reelContainers.forEach(r=>r.innerHTML='');}
+
 function getMiddleCellPosition() {
     const middleReel = reelContainers[1]; // middle column
-    const middleCell = middleReel.children[1]; // middle row
+    const middleCell = middleReel.children[0].children[7]; // middle row of strip
     const rect = middleCell.getBoundingClientRect();
     return { x: rect.left + rect.width/2 + window.scrollX, y: rect.top + rect.height/2 + window.scrollY };
 }
@@ -153,7 +156,6 @@ function showPopup(popup, amount) {
     setTimeout(()=>popup.classList.remove('show'),2000);
 }
 
-// Wildcard animation
 function triggerWild(x,y){
     wildAnimation.style.display="block";wildAnimation.style.left=x+"px";wildAnimation.style.top="0px";
     wildText.style.display="block"; wildText.style.left=x+"px"; wildText.style.top=(y+130)+"px";
@@ -164,7 +166,6 @@ function triggerWild(x,y){
     },20);
 }
 
-// Mario chaos
 function spawnMario(){
   const topPos=100+Math.random()*(window.innerHeight-200);
   marioContainer.style.top=topPos+"px"; marioContainer.style.left="-200px"; marioContainer.style.display="block";
@@ -175,7 +176,7 @@ function spawnMario(){
   },20);
 }
 
-// Spin function
+// Spin animation with golden line and win logic
 function spin(){
   if(spinning) return;
   spinning=true;
@@ -183,36 +184,48 @@ function spin(){
   if(balance<selectedBet){messageEl.textContent='AHAHAH CLOWN';spinning=false;return;}
   balance-=selectedBet;
   balanceEl.textContent=balance+" doubloon";
-  clearReels();
-  createReels();
 
-  // Jackpot every 10th spin
-  if(spinCount%10===0){
-      spinSound.volume=0; document.body.classList.add('bg-shake');
-      jackpotSound.src=jackpotFiles[Math.floor(Math.random()*jackpotFiles.length)];
-      jackpotSound.play();
-      let delta=Math.random()<0.5?Math.floor(balance*0.01):-Math.floor(balance*0.01);
-      balance+=delta; balanceEl.textContent=balance+" doubloon";
-      showPopup(jackpotPopup,delta);
-      jackpotSound.onended=()=>{spinSound.volume=0.3; document.body.classList.remove('bg-shake');};
-  }
+  // Animate reels
+  reelContainers.forEach((r,i)=>{
+      const strip=r.querySelector('.reel-strip');
+      if(!strip) return;
+      let finalOffset=Math.floor(Math.random()*strip.children.length)*-120;
+      strip.style.transition='transform 1s cubic-bezier(0.25,1,0.5,1)';
+      strip.style.transform=`translateY(${finalOffset}px)`;
+  });
 
-  // Regular win every 5th spin
-  else if(spinCount%5===0){
-      let win=Math.floor(Math.random()*selectedBet*2);
-      balance+=win; balanceEl.textContent=balance+" doubloon"; showPopup(winPopup,win);
-      triggerWild(200,200);
-  }
-
-  // Mario every 6th spin
-  if(spinCount%6===0) spawnMario();
-
-  localStorage.setItem('balance',balance);
-  spinning=false;
+  // Determine win
+  setTimeout(()=>{
+      // Jackpot every 10th spin
+      if(spinCount%10===0){
+          spinSound.volume=0;
+          document.body.classList.add('bg-shake');
+          jackpotSound.src=jackpotFiles[Math.floor(Math.random()*jackpotFiles.length)];
+          jackpotSound.play();
+          let delta=Math.random()<0.5?Math.floor(balance*0.01):-Math.floor(balance*0.01);
+          balance+=delta; balanceEl.textContent=balance+" doubloon";
+          showPopup(jackpotPopup,delta);
+          jackpotSound.onended=()=>{spinSound.volume=0.3; document.body.classList.remove('bg-shake');};
+      }
+      // Regular win every 5th spin
+      else if(spinCount%5===0){
+          let win=Math.floor(Math.random()*selectedBet*2);
+          balance+=win; balanceEl.textContent=balance+" doubloon"; showPopup(winPopup,win);
+          // Draw golden line
+          const line=document.createElement('div'); line.className='golden-line';
+          line.style.top='120px'; line.style.left='0'; line.style.width='100%'; goldenLinesContainer.appendChild(line);
+          setTimeout(()=>goldenLinesContainer.removeChild(line),2000);
+          triggerWild(200,200);
+      }
+      // Mario every 6th spin
+      if(spinCount%6===0) spawnMario();
+      localStorage.setItem('balance',balance);
+      spinning=false;
+  },1000);
 }
 
-spinBtn.addEventListener('click',spin);
 createReels();
+spinBtn.addEventListener('click',spin);
 </script>
 </body>
 </html>
