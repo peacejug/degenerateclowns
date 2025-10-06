@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Super Chaotic Clown Slot 3x3</title>
+<title>Chaotic Clown Slot 3x3</title>
 <style>
 body,html{margin:0;padding:0;height:100%;font-family:Arial,sans-serif;background:#111;color:#fff;overflow-x:hidden;}
 .overlay{display:flex;gap:6px;align-items:flex-start;background:url('https://i.imgur.com/oXURWxC.png') no-repeat center center/cover;min-height:100vh;padding:12px;}
@@ -28,9 +28,6 @@ h1{margin:6px 0 0 0;font-size:32px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0
 .popup img{max-width:60%;border-radius:10px;box-shadow:0 30px 80px rgba(0,0,0,0.7);}
 .popup .amount{margin-top:6px;font-size:32px;font-weight:900;color:yellow;animation:shake 0.5s infinite;}
 @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}50%{transform:translateX(6px);}75%{transform:translateX(-6px);}}
-.wild-animation{position:absolute;width:120px;height:120px;animation:shakeWild 1s infinite;z-index:9998;display:none;}
-@keyframes shakeWild{0%,100%{transform:translate(0);}25%{transform:translate(-8px,5px);}50%{transform:translate(8px,-5px);}75%{transform:translate(-5px,8px);}}
-#wildText{position:absolute;color:yellow;font-size:24px;font-weight:bold;text-shadow:2px 2px 6px #000;display:none;z-index:9999;}
 </style>
 </head>
 <body>
@@ -44,7 +41,7 @@ h1{margin:6px 0 0 0;font-size:32px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0
     <div class="balance">Balance: <div id="balanceDisplay">1000 doubloon</div></div>
   </div>
   <main class="main">
-    <h1>Super Chaotic Clown Slot 3x3</h1>
+    <h1>Chaotic Clown Slot 3x3</h1>
     <div class="slot-wrap" id="slotWrap">
       <div class="slot-frame" id="slotFrame">
         <div class="reel-container" id="reel0"><div class="reel-strip"></div></div>
@@ -65,15 +62,12 @@ h1{margin:6px 0 0 0;font-size:32px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0
 <div id="winPopup" class="popup"><img src="https://i.imgur.com/DV24Tzr.jpeg"><div class="amount" id="winAmountEl"></div></div>
 <div id="jackpotPopup" class="popup"><img src="https://i.imgur.com/AmC9sQo.png"><div class="amount" id="jackpotAmountEl"></div></div>
 
-<!-- Wildcard -->
-<img id="wildAnimation" class="wild-animation"/>
-<div id="wildText">SUPER RARE OJ WILDCARD APPEARED</div>
-
 <script>
 const symbols=['https://i.imgur.com/KUfSTMv.jpeg','https://i.imgur.com/QTjoPgM.jpeg','https://i.imgur.com/JiEvroq.jpeg','icon 2.png','icon 3.png','https://bashof.org/wp-content/uploads/2023/11/OJ_Simpson_1987-e1489501934717.jpg','tank 1.png'];
 const reels=[document.querySelector('#reel0 .reel-strip'),document.querySelector('#reel1 .reel-strip'),document.querySelector('#reel2 .reel-strip')];
 let balance=parseInt(localStorage.getItem('balance'))||1000;
 let selectedBet=100;
+let spinCount=0;
 let spinning=false;
 
 // Elements
@@ -82,8 +76,6 @@ const winPopup=document.getElementById('winPopup');
 const winAmountEl=document.getElementById('winAmountEl');
 const jackpotPopup=document.getElementById('jackpotPopup');
 const jackpotAmountEl=document.getElementById('jackpotAmountEl');
-const wildAnimation=document.getElementById('wildAnimation');
-const wildText=document.getElementById('wildText');
 const spinBtn=document.getElementById('spinBtn');
 const chips=document.querySelectorAll('.chip');
 
@@ -92,10 +84,11 @@ const spinSound=new Audio('spin.mp3'); spinSound.loop=true; spinSound.volume=0.3
 const jackpotFiles=['jackpot.mp3','jackpot2.mp3','jackpot3.mp3','jackpot4.mp3','jackpot5.mp3'];
 let jackpotSound=new Audio();
 
+// Chip selection
 chips.forEach(c=>c.addEventListener('click',()=>{chips.forEach(c2=>c2.classList.remove('selected'));c.classList.add('selected');selectedBet=parseInt(c.dataset.bet);}))
 
 function createReels(){
-  reels.forEach(r=>{r.innerHTML='';for(let i=0;i<20;i++){const cell=document.createElement('div');cell.className='cell'; const img=document.createElement('img');img.src=symbols[Math.floor(Math.random()*symbols.length)]; cell.appendChild(img); r.appendChild(cell);}});
+    reels.forEach(r=>{r.innerHTML='';for(let i=0;i<20;i++){const cell=document.createElement('div');cell.className='cell'; const img=document.createElement('img');img.src=symbols[Math.floor(Math.random()*symbols.length)]; cell.appendChild(img); r.appendChild(cell);}})
 }
 
 function getMiddleCellPosition() {
@@ -112,32 +105,44 @@ function showPopup(popup, amount){
     setTimeout(()=>popup.classList.remove('show'),2000);
 }
 
-function triggerWild(x,y){
-    wildAnimation.style.display="block"; wildAnimation.style.left=x+"px"; wildAnimation.style.top="0px";
-    wildText.style.display="block"; wildText.style.left=x+"px"; wildText.style.top=(y+130)+"px";
-    let posY=0;
-    const interval=setInterval(()=>{posY+=10;wildAnimation.style.top=posY+"px";if(posY>=y){clearInterval(interval);setTimeout(()=>{wildAnimation.style.display="none";wildText.style.display="none";},1500);}},20);
-}
-
 function spinReels(){
     if(spinning) return;
     spinning=true;
-    if(balance<selectedBet){alert('AHAHAH CLOWN');return;}
+    spinCount++;
+    if(balance<selectedBet){alert('AHAHAH CLOWN');spinning=false;return;}
     balance-=selectedBet; balanceEl.textContent=balance+" doubloon"; localStorage.setItem('balance',balance);
     createReels();
+
+    // Start spin sound if not playing
+    if(spinSound.paused) spinSound.play();
+
     reels.forEach((r,i)=>{
-        const offset=-120*10; 
+        const offset=-120*10;
         r.style.transition='transform 1s cubic-bezier(0.25,1,0.5,1)';
         r.style.transform=`translateY(${offset}px)`;
         setTimeout(()=>{r.style.transition='none'; r.style.transform='translateY(0px)';},1000+i*300);
     });
-    spinSound.play();
+
     setTimeout(()=>{
-        // Example random win
-        if(Math.random()<0.3){ // 30% chance to win
-            const win=Math.floor(selectedBet*Math.random()*5);
-            balance+=win; balanceEl.textContent=balance+" doubloon"; localStorage.setItem('balance',balance);
-            showPopup(winPopup,win);
+        // Jackpot every 10th spin
+        if(spinCount%10===0){
+            spinSound.volume=0; // mute spin during jackpot
+            const jackpotFile=jackpotFiles[Math.floor(Math.random()*jackpotFiles.length)];
+            jackpotSound.src=jackpotFile; jackpotSound.play();
+            const delta=balance>50?Math.floor(balance*0.01)*(Math.random()<0.5?1:-1):1;
+            balance+=delta;
+            balanceEl.textContent=balance+" doubloon"; localStorage.setItem('balance',balance);
+            showPopup(jackpotPopup,delta);
+            setTimeout(()=>{spinSound.volume=0.3;},jackpotSound.duration*1000);
+        } else {
+            // 98% RTP logic
+            if(Math.random()<0.02){ // lose
+                // no win
+            } else {
+                const win=Math.floor(selectedBet*(0.1+Math.random()*0.9));
+                balance+=win; balanceEl.textContent=balance+" doubloon"; localStorage.setItem('balance',balance);
+                showPopup(winPopup,win);
+            }
         }
         spinning=false;
     },1800);
