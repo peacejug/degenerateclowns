@@ -34,6 +34,7 @@ h1{margin:6px 0 0 0;font-size:32px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0
 .wild-animation{position:absolute;width:120px;height:120px;animation:shakeWild 1s infinite;}
 @keyframes shakeWild{0%,100%{transform:translate(0);}25%{transform:translate(-8px,5px);}50%{transform:translate(8px,-5px);}75%{transform:translate(-5px,8px);}}
 #wildText{position:absolute;color:yellow;font-size:24px;font-weight:bold;text-shadow:2px 2px 6px #000;display:none;z-index:9999;}
+#chaosContainer{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;}
 @media(max-width:860px){.left{width:92%;order:2;}.main{order:1;width:100%;}.slot-wrap{width:94%;}.popup{top:40%;}}
 </style>
 </head>
@@ -72,9 +73,9 @@ h1{margin:6px 0 0 0;font-size:32px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0
 <img id="wildAnimation" class="wild-animation" src="https://bashof.org/wp-content/uploads/2023/11/OJ_Simpson_1987-e1489501934717.jpg" style="display:none;"/>
 <div id="wildText">SUPER RARE OJ WILDCARD APPEARED</div>
 <div id="goldenLinesContainer"></div>
+<div id="chaosContainer"></div>
 
 <script>
-// SYMBOLS
 const symbols=[
 'https://i.imgur.com/KUfSTMv.jpeg',
 'https://i.imgur.com/QTjoPgM.jpeg',
@@ -89,9 +90,10 @@ const reels=[
 [2,0,1,3,5,6,4,2,0,1]
 ];
 const reelContainers=[document.getElementById('reel0'),document.getElementById('reel1'),document.getElementById('reel2')];
-
 let balance=parseInt(localStorage.getItem('balance'))||1000;
 let selectedBet=100;
+let spinCount=0;
+
 const chips=[...document.querySelectorAll('.chip')];
 chips.forEach(c=>c.addEventListener('click',()=>{chips.forEach(c2=>c2.classList.remove('selected'));c.classList.add('selected');selectedBet=parseInt(c.dataset.bet);}));
 
@@ -104,18 +106,14 @@ const jackpotAmountEl=document.getElementById('jackpotAmountEl');
 const goldenLinesContainer=document.getElementById('goldenLinesContainer');
 const wildAnimation=document.getElementById('wildAnimation');
 const wildText=document.getElementById('wildText');
+const chaosContainer=document.getElementById('chaosContainer');
 
-let spinCount=0;
-let isSpinning=false;
-let isJackpotPlaying=false;
-
-// SOUNDS
 const spinSound=new Audio('spin.mp3'); spinSound.loop=false;
 const winSound=new Audio('win.mp3');
 const jackpotFiles=['jackpot.mp3','jackpot2.mp3','jackpot3.mp3','jackpot4.mp3','jackpot5.mp3'];
 let jackpotSound=new Audio();
+const marioGif='mario.gif';
 
-// CREATE REEL STRIP
 function createReelStrip(reel,start){
     const strip=document.createElement('div');
     strip.classList.add('reel-strip');
@@ -128,7 +126,6 @@ function createReelStrip(reel,start){
     return strip;
 }
 
-// DRAW GOLDEN LINES
 function drawWinningLines(winCoords){
     goldenLinesContainer.innerHTML='';
     winCoords.forEach(coords=>{
@@ -143,7 +140,6 @@ function drawWinningLines(winCoords){
     });
 }
 
-// WILDCARD ANIMATION
 function animateWild(x,y){
     wildAnimation.style.left=x+'px';
     wildAnimation.style.top='0px';
@@ -156,14 +152,26 @@ function animateWild(x,y){
     setTimeout(()=>{wildAnimation.style.display='none';wildAnimation.style.transform='rotate(0deg)';wildText.style.display='none';},1200);
 }
 
-// SPIN FUNCTION
+function spawnMario() {
+    const img=document.createElement('img');
+    img.src=marioGif;
+    img.style.position='absolute';
+    img.style.width='120px';
+    img.style.top=Math.random()*window.innerHeight*0.6+'px';
+    img.style.left='-150px';
+    img.style.zIndex=9999;
+    chaosContainer.appendChild(img);
+    const duration=3000+Math.random()*2000;
+    const anim=img.animate([{left:'-150px'},{left:window.innerWidth+'px'}],{duration:duration,easing:'linear'});
+    anim.onfinish=()=>img.remove();
+}
+
 function spin(){
     if(balance<=0){messageEl.textContent="AHAHAH CLOWN";return;}
-    if(isSpinning) return;
-    isSpinning = true;
     spinCount++;
     messageEl.textContent="Spinning...";
-    if(!isJackpotPlaying && spinSound.paused) spinSound.play();
+
+    if(spinSound.paused) spinSound.play();
 
     const results=[];
     for(let r=0;r<3;r++){
@@ -180,52 +188,33 @@ function spin(){
         let jackpotHit=false;
         const winCoords=[];
 
-        // Jackpot every 5 spins
-        if(spinCount%5===0){
-            if(Math.random()<0.01){balance+=Math.round(balance*0.01);winAmount=Math.round(balance*0.01);}
-            else{balance-=Math.round(balance*0.10);winAmount=-Math.round(balance*0.10);}
-            jackpotHit=true;
-            spinSound.volume=0;
-            isJackpotPlaying=true;
-            jackpotSound.src=jackpotFiles[Math.floor(Math.random()*jackpotFiles.length)];
-            jackpotSound.volume=0.5;
-            jackpotSound.currentTime=0;
-            jackpotSound.play();
-            jackpotSound.onended = ()=>{spinSound.volume=1;isJackpotPlaying=false;}
-        }
-
-        // Evaluate middle row (row 1) for wins
-        const middleSymbols=[];
-        for(let r=0;r<3;r++){middleSymbols.push(results[r][0].children[1].firstChild.src);}
-        if(new Set(middleSymbols).size===1){winAmount=selectedBet*5;
-            const top=reelContainers[0].getBoundingClientRect().top+180;
-            winCoords.push({startX:reelContainers[0].getBoundingClientRect().left, startY:top, width:reelContainers[2].getBoundingClientRect().right-reelContainers[0].getBoundingClientRect().left, angle:0});
-        }
-
-        // Diagonal checks
-        // top-left → bottom-right
-        if(results[0][0].children[0].firstChild.src===results[1][0].children[1].firstChild.src && results[1][0].children[1].firstChild.src===results[2][0].children[2].firstChild.src){
-            winCoords.push({startX:reelContainers[0].getBoundingClientRect().left, startY:reelContainers[0].getBoundingClientRect().top, width:reelContainers[2].getBoundingClientRect().right-reelContainers[0].getBoundingClientRect().left, angle:45});
-        }
-
-        // bottom-left → top-right
-        if(results[0][0].children[2].firstChild.src===results[1][0].children[1].firstChild.src && results[1][0].children[1].firstChild.src===results[2][0].children[0].firstChild.src){
-            winCoords.push({startX:reelContainers[0].getBoundingClientRect().left, startY:reelContainers[0].getBoundingClientRect().top+720, width:reelContainers[2].getBoundingClientRect().right-reelContainers[0].getBoundingClientRect().left, angle:-45});
+        // Win logic every 3rd spin
+        if(spinCount%3===0){
+            if(Math.random()<0.5){winAmount=-Math.round(balance*0.10);}else{winAmount=Math.round(balance*0.01);}
         }
 
         // Wildcard animation
         if(Math.random()<0.25){animateWild(reelContainers[1].getBoundingClientRect().left+120,reelContainers[1].getBoundingClientRect().top+180);}
 
+        // Golden line for middle row if 3 symbols match
+        const mid0=results[0][0].children[1].firstChild.src;
+        const mid1=results[1][0].children[1].firstChild.src;
+        const mid2=results[2][0].children[1].firstChild.src;
+        if(mid0===mid1 && mid1===mid2){winCoords.push({startX:reelContainers[0].getBoundingClientRect().left,startY:reelContainers[0].getBoundingClientRect().top+360,width:reelContainers[2].getBoundingClientRect().right-reelContainers[0].getBoundingClientRect().left,angle:0});}
+
         drawWinningLines(winCoords);
+
         balance+=winAmount;
         document.getElementById('balanceDisplay').textContent=balance+" doubloon";
 
         const midCell=reelContainers[1].getBoundingClientRect();
         if(winAmount>0){winAmountEl.textContent=winAmount+" doubloon";winPopup.style.left=(midCell.left+midCell.width/2)+'px';winPopup.style.top=(midCell.top+midCell.height/2)+'px';winPopup.classList.add('show');winSound.currentTime=0;winSound.play();setTimeout(()=>winPopup.classList.remove('show'),1800);}
-        if(jackpotHit){jackpotAmountEl.textContent=winAmount<0?`-${-winAmount}`:winAmount+" doubloon";jackpotPopup.style.left=(midCell.left+midCell.width/2)+'px';jackpotPopup.style.top=(midCell.top+midCell.height/2)+'px';jackpotPopup.classList.add('show');document.body.classList.add('bg-shake');setTimeout(()=>{jackpotPopup.classList.remove('show');document.body.classList.remove('bg-shake');},1800);}
+        if(winAmount<0){jackpotAmountEl.textContent=`-${-winAmount} doubloon`;jackpotPopup.style.left=(midCell.left+midCell.width/2)+'px';jackpotPopup.style.top=(midCell.top+midCell.height/2)+'px';jackpotPopup.classList.add('show');document.body.classList.add('bg-shake');setTimeout(()=>{jackpotPopup.classList.remove('show');document.body.classList.remove('bg-shake');},1800);}
+
+        // Mario chaos every 6th spin
+        if(spinCount%6===0){spawnMario();}
 
         localStorage.setItem('balance',balance);
-        isSpinning=false;
     },1800);
 }
 
