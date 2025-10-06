@@ -6,217 +6,553 @@
 <title>Clown Slot Game</title>
 <style>
   :root{
-    --bg1:#151418;
-    --bg2:#2b2a2f;
-    --accent1:#ffcc00;
-    --accent2:#ff6600;
-    --panel:#0f0f12;
+    --bg1:#151418; --bg2:#2b2a2f;
+    --accent1:#ffcc00; --accent2:#ff6600;
     --text:#f5efe6;
   }
-  html,body{
-    height:100%;
-    margin:0;
-    font-family:Inter,system-ui,Arial,sans-serif;
-    background:linear-gradient(180deg,var(--bg1),var(--bg2));
-    color:var(--text);
-    display:flex;
-    justify-content:center;
-    align-items:flex-start;
-    -webkit-font-smoothing:antialiased;
-    overflow-x:hidden;
-  }
-  .wrap{
-    max-width:1100px;
-    width:100%;
-    display:flex;
-    flex-wrap:wrap;
-    justify-content:center;
-    align-items:flex-start;
-    gap:16px;
-    padding:10px;
-    box-sizing:border-box;
-  }
-  .left{
-    width:240px;
-    background:#111;
-    border-radius:14px;
-    padding:14px;
-    box-shadow:0 4px 25px rgba(0,0,0,0.6);
-    flex-shrink:0;
-  }
-  .left h3{margin:0 0 10px 0;font-size:18px;color:var(--accent1);text-align:center}
-  .payout-row{display:flex;justify-content:space-between;padding:6px;border-radius:6px;margin-bottom:6px;background:rgba(255,255,255,0.03);font-size:13px}
-  .balance{margin-top:8px;padding:10px;border-radius:10px;background:rgba(255,255,255,0.03);text-align:center;font-weight:700;font-size:14px}
+  html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:#111;color:var(--text);-webkit-font-smoothing:antialiased}
+  body{background-image:url('https://i.imgur.com/oXURWxC.png'); background-size:cover; background-position:center;}
+  .overlay { background: linear-gradient(0deg, rgba(0,0,0,0.55), rgba(0,0,0,0.55)); position:fixed; inset:0; display:flex; justify-content:center; align-items:flex-start; padding:18px; box-sizing:border-box; overflow:auto;}
+  .wrap{max-width:1200px;width:100%;display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+  /* Left: payout & info */
+  .left{width:260px;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);border-radius:14px;padding:14px;box-shadow:0 8px 30px rgba(0,0,0,0.6);flex-shrink:0}
+  .left h3{margin:0 0 8px 0;color:var(--accent1);text-align:center}
+  .payout-row{display:flex;justify-content:space-between;padding:8px;border-radius:8px;margin-bottom:8px;background:rgba(255,255,255,0.02);font-size:14px}
+  .balance{margin-top:12px;padding:10px;border-radius:10px;background:rgba(0,0,0,0.25);text-align:center;font-weight:700}
+  .jackpotBox{margin-top:10px;padding:10px;border-radius:10px;background:rgba(255,200,0,0.06);text-align:center;color:var(--accent1);font-weight:800}
 
-  .main{
-    flex:1;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    min-width:280px;
-  }
-  h1{margin:6px 0 10px 0;font-size:26px;letter-spacing:0.6px;text-align:center}
-  .slot-frame{
-    background:#000;
-    padding:12px;
-    border-radius:12px;
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:8px;
-    width:min(600px,95vw);
-  }
-  .cell{
-    background:#111;
-    border-radius:10px;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    overflow:hidden;
-    border:2px solid rgba(255,255,255,0.05);
-    aspect-ratio:1/1;
-    transition:transform 220ms ease, box-shadow 220ms;
-  }
-  .cell img{max-width:90%;max-height:90%;display:block;border-radius:8px;pointer-events:none}
-  .cell.win{transform:scale(1.05);box-shadow:0 0 25px rgba(255,220,0,0.8),0 0 60px rgba(255,120,0,0.2)}
-  .controls{margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;width:100%}
-  .bet-chips{display:flex;gap:10px}
-  .chip{padding:8px 12px;border-radius:10px;background:#222;cursor:pointer;border:2px solid rgba(255,255,255,0.05);font-weight:700;font-size:14px}
-  .chip.selected{outline:2px solid rgba(255,204,0,0.3)}
-  .spin-btn{padding:10px 26px;border-radius:12px;background:linear-gradient(135deg,var(--accent1),var(--accent2));color:#222;font-size:18px;font-weight:800;border:none;cursor:pointer;box-shadow:0 6px 18px rgba(255,102,0,0.2)}
+  /* Main area */
+  .main{flex:1;display:flex;flex-direction:column;align-items:center;gap:12px;min-width:300px}
+  h1{margin:6px 0 0 0;font-size:28px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0.6)}
+  .slot-wrap{width:min(780px,96vw);display:flex;flex-direction:column;align-items:center;gap:10px}
+  .slot-frame{position:relative;background:linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.6));padding:12px;border-radius:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%}
+  .cell{background:linear-gradient(180deg,#000,#111);border-radius:10px;display:flex;justify-content:center;align-items:center;overflow:hidden;border:2px solid rgba(255,255,255,0.04);aspect-ratio:1/1;transition:transform .18s, box-shadow .18s}
+  .cell img{max-width:92%;max-height:92%;display:block;border-radius:8px;pointer-events:none}
+  .cell.win{transform:scale(1.06);box-shadow:0 0 30px rgba(255,220,0,0.9),0 0 90px rgba(255,120,0,0.25)}
+  .controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;width:100%}
+  .bet-chips{display:flex;gap:8px}
+  .chip{padding:8px 12px;border-radius:10px;background:rgba(0,0,0,0.45);cursor:pointer;border:2px solid rgba(255,255,255,0.04);font-weight:700}
+  .chip.selected{outline:3px solid rgba(255,204,0,0.12);transform:translateY(-3px)}
+  .spin-btn{padding:12px 26px;border-radius:12px;background:linear-gradient(135deg,var(--accent1),var(--accent2));color:#222;font-size:18px;font-weight:800;border:none;cursor:pointer;box-shadow:0 8px 28px rgba(255,102,0,0.14)}
   .spin-btn:disabled{opacity:0.5;cursor:not-allowed}
-  .info-line{margin-top:6px;font-size:14px;color:rgba(255,255,255,0.85)}
-  .message{margin-top:10px;font-size:18px;min-height:24px;color:var(--accent1);text-align:center}
+  .info-line{font-size:14px;color:rgba(255,255,255,0.9);text-align:center}
+  .message{font-size:16px;color:var(--accent1);min-height:28px;text-align:center;text-shadow:0 0 8px rgba(255,120,0,0.15)}
 
-  .popup{
-    position:fixed;left:50%;top:20%;transform:translateX(-50%) scale(0.95);
-    z-index:9999;pointer-events:none;opacity:0;transition:opacity .25s,transform .25s;
-  }
+  /* canvas overlay for win lines */
+  #lineCanvas{position:absolute;left:12px;top:12px;pointer-events:none;z-index:5}
+  /* popups */
+  .popup{position:fixed;left:50%;top:18%;transform:translateX(-50%) scale(.95);z-index:9999;opacity:0;pointer-events:none;transition:opacity .18s,transform .18s}
   .popup.show{opacity:1;transform:translateX(-50%) scale(1)}
-  .popup img{max-width:80vw;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,0.7)}
-
-  @media (max-width:768px){
-    .wrap{flex-direction:column;align-items:center}
-    .left{width:90%;order:2}
-    .slot-frame{width:90vw;gap:6px}
-    .cell{aspect-ratio:1/1}
-    .main{order:1}
-    .spin-btn{padding:12px 40px;font-size:20px}
+  .popup img{max-width:84vw;border-radius:10px;box-shadow:0 30px 80px rgba(0,0,0,0.7)}
+  @media (max-width:860px){
+    .left{width:92%;order:2}
+    .main{order:1;width:100%}
+    .slot-wrap{width:94%}
+    .popup{top:10%}
   }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <aside class="left">
-    <h3>PAYOUT TABLE</h3>
-    <div class="payout-row"><span>3 Clown Faces (Jackpot)</span><strong>50×</strong></div>
-    <div class="payout-row"><span>3 Other Symbols</span><strong>10×</strong></div>
-    <div class="payout-row"><span>2 Clown Faces</span><strong>3×</strong></div>
-    <div class="payout-row"><span>Else</span><strong>Lose</strong></div>
-    <div class="balance">
-      Balance: <span id="balanceDisplay">1000</span> doublons
-    </div>
-  </aside>
+<div class="overlay">
+  <div class="wrap">
+    <aside class="left" aria-label="Payout and info">
+      <h3>PAYOUT TABLE</h3>
+      <div class="payout-row"><span>3 Wilds (OJ)</span><strong>Progressive JACKPOT</strong></div>
+      <div class="payout-row"><span>3 Clown Faces</span><strong>50×</strong></div>
+      <div class="payout-row"><span>3 Other Symbols</span><strong>10×</strong></div>
+      <div class="payout-row"><span>2 Wilds + 1 Clown</span><strong>25×</strong></div>
+      <div class="payout-row"><span>2 Wilds + anything</span><strong>5×</strong></div>
+      <div class="payout-row"><span>1 Wild + 2 matching</span><strong>15×</strong></div>
 
-  <main class="main">
-    <h1>Clown Slot Game</h1>
-    <div class="slot-frame" id="slotFrame">
-      <div class="cell"></div><div class="cell"></div><div class="cell"></div>
-      <div class="cell"></div><div class="cell"></div><div class="cell"></div>
-      <div class="cell"></div><div class="cell"></div><div class="cell"></div>
-    </div>
-    <div class="controls">
-      <div class="bet-chips">
-        <div class="chip" data-bet="10">10</div>
-        <div class="chip" data-bet="50">50</div>
-        <div class="chip selected" data-bet="100">100</div>
+      <div class="balance">
+        Balance: <div id="balanceDisplay" style="font-size:18px;margin-top:6px">1000 doublons</div>
       </div>
-      <button id="spinBtn" class="spin-btn">SPIN</button>
-    </div>
-    <div class="info-line">Selected bet: <span id="selectedBet">100</span></div>
-    <div class="message" id="message">Good luck!</div>
-  </main>
+
+      <div class="jackpotBox" id="jackpotBox" title="Progressive Jackpot">
+        Progressive Jackpot:<div id="jackpotDisplay" style="font-size:18px;margin-top:6px">10000</div>
+      </div>
+    </aside>
+
+    <main class="main" role="main">
+      <h1>Clown Slot Game</h1>
+
+      <div class="slot-wrap">
+        <div class="slot-frame" id="slotFrame" aria-live="polite" aria-label="Slot machine">
+          <!-- 9 cells -->
+          <div class="cell" data-i="0"></div>
+          <div class="cell" data-i="1"></div>
+          <div class="cell" data-i="2"></div>
+          <div class="cell" data-i="3"></div>
+          <div class="cell" data-i="4"></div>
+          <div class="cell" data-i="5"></div>
+          <div class="cell" data-i="6"></div>
+          <div class="cell" data-i="7"></div>
+          <div class="cell" data-i="8"></div>
+
+          <!-- canvas overlay for lines -->
+          <canvas id="lineCanvas"></canvas>
+        </div>
+
+        <div class="controls">
+          <div class="bet-chips" role="toolbar" aria-label="Choose bet">
+            <div class="chip" data-bet="10">10</div>
+            <div class="chip" data-bet="50">50</div>
+            <div class="chip selected" data-bet="100">100</div>
+          </div>
+          <button id="spinBtn" class="spin-btn" aria-label="Spin">SPIN</button>
+        </div>
+
+        <div class="info-line">Selected bet: <strong id="selectedBet">100</strong> doublons</div>
+        <div class="message" id="message">Good luck!</div>
+      </div>
+    </main>
+  </div>
 </div>
 
 <!-- Popups -->
-<div id="jackpotPopup" class="popup">
-  <img src="Jackpot sign.png" alt="Jackpot!">
+<div id="jackpotPopup" class="popup" aria-hidden="true">
+  <img src="https://i.imgur.com/AmC9sQo.png" alt="Jackpot!" />
 </div>
-<div id="winPopup" class="popup" style="top:30%">
-  <img src="Feels_good_man.jpeg" alt="You win!">
+<div id="winPopup" class="popup" aria-hidden="true">
+  <img src="https://i.imgur.com/DV24Tzr.jpeg" alt="You Win!" />
 </div>
 
 <script>
+/* --------------------------
+   Assets & settings
+   -------------------------- */
+// icons: first 3 are clown faces (jackpot-tier regulars), next are other symbols, then wild
 const icons = [
-  'KUfSTMv.jpeg','QTjoPgM.jpeg','JiEvroq.jpeg',
-  'tank 1.png','icon 2.png','icon 3.png'
-].map(i=>`https://peacejug.github.io/degenerateclowns/${encodeURIComponent(i)}`);
+  'https://i.imgur.com/KUfSTMv.jpeg', // clown 1
+  'https://i.imgur.com/QTjoPgM.jpeg', // clown 2
+  'https://i.imgur.com/JiEvroq.jpeg', // clown 3
+  'https://peacejug.github.io/degenerateclowns/tank%201.png',
+  'https://peacejug.github.io/degenerateclowns/icon%202.png',
+  'https://peacejug.github.io/degenerateclowns/icon%203.png',
+  'https://bashof.org/wp-content/uploads/2023/11/OJ_Simpson_1987-e1489501934717.jpg' // WILD (OJ)
+];
 
-const spinSoundSrc = 'https://peacejug.github.io/degenerateclowns/spin.mp3';
-const winSoundSrc = 'https://peacejug.github.io/degenerateclowns/win.mp3';
-const jackpotSoundSrc = 'https://peacejug.github.io/degenerateclowns/jackpot.mp3';
+// index of wild in icons array
+const WILD_INDEX = icons.length - 1;
 
-const PAYOUTS={JACKPOT_3:50,OTHER_3:10,TWO_CLOWNS:3};
-let balance=1000;
-let selectedBet=100;
-let spinning=false;
+// sounds (use your GitHub repo)
+const SPIN_SRC = 'https://peacejug.github.io/degenerateclowns/spin.mp3';
+const WIN_SRC = 'https://peacejug.github.io/degenerateclowns/win.mp3';
+const JACKPOT_SRC = 'https://peacejug.github.io/degenerateclowns/jackpot.mp3';
 
-const cells=[...document.querySelectorAll('.cell')];
-const chips=[...document.querySelectorAll('.chip')];
-const spinBtn=document.getElementById('spinBtn');
-const balanceEl=document.getElementById('balanceDisplay');
-const selectedBetEl=document.getElementById('selectedBet');
-const messageEl=document.getElementById('message');
-const jackpotPopup=document.getElementById('jackpotPopup');
-const winPopup=document.getElementById('winPopup');
+// payout constants
+const PAYOUTS = {
+  JACKPOT_BASE: 10000,   // default jackpot starting value
+  JACKPOT_INCREMENT: 50, // amount added to progressive jackpot on each spin
+  THREE_CLOWN: 50,
+  THREE_OTHER: 10,
+  TWO_WILD_ONE_CLOWN: 25,
+  TWO_WILD_ANY: 5,
+  ONE_WILD_TWO_MATCH: 15
+};
 
-function playSound(src,vol=1){try{const a=new Audio(src);a.volume=vol;a.play().catch(()=>{});return a;}catch{return null;}}
-function refreshBalance(){balanceEl.textContent=balance;spinBtn.disabled=balance<selectedBet;}
-function clearWins(){cells.forEach(c=>c.classList.remove('win'));}
-function highlightWinCells(ix){ix.forEach(i=>cells[i]?.classList.add('win'));}
-function showPopup(el,d=1000){el.classList.add('show');setTimeout(()=>el.classList.remove('show'),d);}
-function rand(){return Math.floor(Math.random()*icons.length);}
-function isClown(i){return i<=2;}
+// localStorage keys
+const LS_BAL_KEY = 'clown_balance';
+const LS_JACK_KEY = 'clown_jackpot';
 
-chips.forEach(ch=>ch.onclick=()=>{chips.forEach(c=>c.classList.remove('selected'));ch.classList.add('selected');selectedBet=+ch.dataset.bet;selectedBetEl.textContent=selectedBet;refreshBalance();});
-refreshBalance();
+// persistent values
+let balance = parseInt(localStorage.getItem(LS_BAL_KEY), 10);
+if (!Number.isFinite(balance)) balance = 1000;
 
-function evaluate(g){
-  for(let r=0;r<3;r++){const [a,b,c]=[g[r*3],g[r*3+1],g[r*3+2]];
-    if(a===b&&b===c)return {mult:isClown(a)?PAYOUTS.JACKPOT_3:PAYOUTS.OTHER_3,type:isClown(a)?'jackpot':'win',ix:[r*3,r*3+1,r*3+2]};
-  }
-  for(let c=0;c<3;c++){const [a,b,d]=[g[c],g[c+3],g[c+6]];
-    if(a===b&&b===d)return {mult:isClown(a)?PAYOUTS.JACKPOT_3:PAYOUTS.OTHER_3,type:isClown(a)?'jackpot':'win',ix:[c,c+3,c+6]};
-  }
-  if(g[0]===g[4]&&g[4]===g[8])return {mult:isClown(g[0])?PAYOUTS.JACKPOT_3:PAYOUTS.OTHER_3,type:isClown(g[0])?'jackpot':'win',ix:[0,4,8]};
-  if(g[2]===g[4]&&g[4]===g[6])return {mult:isClown(g[2])?PAYOUTS.JACKPOT_3:PAYOUTS.OTHER_3,type:isClown(g[2])?'jackpot':'win',ix:[2,4,6]};
-  const clowns=g.filter(isClown).length;
-  if(clowns>=2){const ix=[];for(let i=0;i<g.length&&ix.length<2;i++)if(isClown(g[i]))ix.push(i);return {mult:PAYOUTS.TWO_CLOWNS,type:'win',ix};}
-  return {mult:0,type:'none',ix:[]};
+let jackpot = parseInt(localStorage.getItem(LS_JACK_KEY), 10);
+if (!Number.isFinite(jackpot)) jackpot = PAYOUTS.JACKPOT_BASE;
+
+/* --------------------------
+   DOM references
+   -------------------------- */
+const cells = Array.from(document.querySelectorAll('.cell'));
+const spinBtn = document.getElementById('spinBtn');
+const chips = Array.from(document.querySelectorAll('.chip'));
+const selectedBetEl = document.getElementById('selectedBet');
+const balanceEl = document.getElementById('balanceDisplay');
+const jackpotEl = document.getElementById('jackpotDisplay');
+const messageEl = document.getElementById('message');
+const jackpotPopup = document.getElementById('jackpotPopup');
+const winPopup = document.getElementById('winPopup');
+const canvas = document.getElementById('lineCanvas');
+const ctx = canvas.getContext('2d');
+
+let selectedBet = 100;
+let spinning = false;
+
+// spin sound: manage single instance + queue
+let spinAudio = null;
+let spinQueued = false;
+
+/* --------------------------
+   Helpers
+   -------------------------- */
+function saveState(){
+  localStorage.setItem(LS_BAL_KEY, String(balance));
+  localStorage.setItem(LS_JACK_KEY, String(jackpot));
 }
 
-async function spin(){
-  if(spinning||balance<selectedBet)return;
-  spinning=true;clearWins();
-  balance-=selectedBet;refreshBalance();
-  messageEl.textContent='Spinning...';
-  playSound(spinSoundSrc,0.9);
-  const flicks=15;let count=0;const grid=[];
-  const interval=setInterval(()=>{
-    cells.forEach(c=>{c.innerHTML=`<img src="${icons[rand()]}">`;});
-    count++;
-    if(count>=flicks){
-      clearInterval(interval);
-      for(let i=0;i<9;i++){grid[i]=rand();cells[i].innerHTML=`<img src="${icons[grid[i]]}">`;}
-      const res=evaluate(grid);
-      if(res.type==='jackpot'){playSound(jackpotSoundSrc,0.05);showPopup(jackpotPopup,1200);highlightWinCells(res.ix);const w=selectedBet*res.mult;balance+=w;messageEl.textContent=`JACKPOT! +${w}`;}
-      else if(res.type==='win'){playSound(winSoundSrc,0.8);showPopup(winPopup,900);highlightWinCells(res.ix);const w=selectedBet*res.mult;balance+=w;messageEl.textContent=`You win +${w}`;}
-      else{messageEl.textContent=`You lost ${selectedBet}`;}
-      refreshBalance();spinning=false;
+function refreshUI(){
+  balanceEl.textContent = `${balance} doublons`;
+  jackpotEl.textContent = jackpot;
+  selectedBetEl.textContent = selectedBet;
+  spinBtn.disabled = (spinning || balance < selectedBet || balance < 10);
+  // if balance < 10 show AHAHAH CLOWN and disable
+  if(balance < 10){
+    messageEl.textContent = 'AHAHAH CLOWN';
+    spinBtn.disabled = true;
+  }
+}
+
+/* draw connecting line between centers of cells in winIndexes array */
+function drawWinLine(winIndexes){
+  // resize canvas to overlay the slot-frame
+  const frame = document.getElementById('slotFrame');
+  const rect = frame.getBoundingClientRect();
+  canvas.width = rect.width - 24; // account for padding (12 left + right)
+  canvas.height = rect.height - 24;
+  canvas.style.left = frame.style.left;
+  canvas.style.top = frame.style.top;
+  // get center coordinates of each cell relative to canvas
+  const positions = cells.map(c => {
+    const r = c.getBoundingClientRect();
+    const fr = frame.getBoundingClientRect();
+    return {
+      x: r.left - fr.left - 12 + r.width/2, // offset by frame padding
+      y: r.top - fr.top - 12 + r.height/2
+    };
+  });
+  // draw line(s)
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.lineWidth = 8;
+  ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
+  ctx.strokeStyle = 'rgba(255,215,0,0.95)'; // golden
+  ctx.shadowColor = 'rgba(255,140,0,0.8)';
+  ctx.shadowBlur = 30;
+  ctx.beginPath();
+  if(winIndexes.length === 1){
+    // single cell win — draw a small circle
+    const p = positions[winIndexes[0]];
+    ctx.arc(p.x, p.y, Math.min(canvas.width, canvas.height)*0.04, 0, Math.PI*2);
+  } else {
+    // connect in order
+    winIndexes.forEach((idx, i) => {
+      const p = positions[idx];
+      if(i===0) ctx.moveTo(p.x, p.y);
+      else ctx.lineTo(p.x, p.y);
+    });
+  }
+  ctx.stroke();
+  // fade out after a while
+  setTimeout(()=> { ctx.clearRect(0,0,canvas.width,canvas.height); }, 1100);
+}
+
+/* show popup */
+function showPopup(el, duration=1100){
+  el.classList.add('show');
+  el.setAttribute('aria-hidden','false');
+  setTimeout(()=>{
+    el.classList.remove('show');
+    el.setAttribute('aria-hidden','true');
+  }, duration);
+}
+
+/* safe playSound that returns audio instance */
+function playSound(src, vol=1.0){
+  try {
+    const a = new Audio(src);
+    a.volume = vol;
+    a.play().catch(()=>{ /* autoplay/user gesture restrictions */ });
+    return a;
+  } catch(e){
+    return null;
+  }
+}
+
+/* manage spin audio with queue:
+   - when spin requested and a spinAudio is already playing, set spinQueued=true and return
+   - when spinAudio ends, if spinQueued true then clear it and call `executeSpin()` to actually perform the spin action
+*/
+function requestSpin(){
+  if(spinAudio && !spinAudio.paused){
+    // queue a single spin only
+    spinQueued = true;
+    messageEl.textContent = 'Spin queued...';
+    return;
+  }
+  // otherwise start spin by playing sound and executing spin flow
+  spinAudio = new Audio(SPIN_SRC);
+  spinAudio.volume = 0.9;
+  spinAudio.play().catch(()=>{ /* ignore */ });
+  // when spin audio ends, handle queue or just proceed
+  spinAudio.onended = () => {
+    if(spinQueued){
+      spinQueued = false;
+      // start the next spin's sound and flow
+      requestSpin(); // this will play spinAudio again and then call executeSpin below
     }
-  },70);
+  };
+  // execute the spin game flow alongside audio (we want the spin sound to play while animation runs)
+  executeSpin();
 }
-spinBtn.onclick=spin;
-document.addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();spin();}});
+
+/* --------------------------
+   Payout evaluation with wild substitution
+   returns { type, multiplier, winIndexes }
+   type: 'jackpot' | 'win' | 'none'
+*/
+function evaluateGrid(gridIndices){
+  // helper to check if a symbol index is clown (0..2)
+  const isClown = idx => idx >= 0 && idx <= 2;
+  const isWild = idx => idx === WILD_INDEX;
+
+  // For substitution logic, try to find a winning symbol for each line considering wilds
+  const checkLine = (a,b,c) => {
+    const vals = [gridIndices[a], gridIndices[b], gridIndices[c]];
+    // if all three are wild:
+    if(vals.every(v => isWild(v))) return {type:'jackpot', mult: jackpot, idxs:[a,b,c]};
+
+    // determine target symbol (prefer non-wild)
+    const nonWild = vals.find(v => !isWild(v));
+    // if no nonWild (all wild) handled above
+    const target = nonWild !== undefined ? nonWild : vals[0];
+    // check how many match target if wilds substitute
+    let matchCount = 0;
+    vals.forEach(v => {
+      if(v === target || isWild(v)) matchCount++;
+    });
+    // now decide multipliers based on matchCount and presence of wilds
+    if(matchCount === 3){
+      // if target is clown => 3 clown faces
+      if(isClown(target)) return {type:'jackpot', mult: jackpot, idxs:[a,b,c]};
+      // else 3 of any other icon
+      return {type:'win', mult:PAYOUTS.THREE_OTHER, idxs:[a,b,c]};
+    }
+    // not a full triple
+    return null;
+  };
+
+  // check rows
+  for(let r=0;r<3;r++){
+    const res = checkLine(r*3, r*3+1, r*3+2);
+    if(res) return res;
+  }
+  // columns
+  for(let c=0;c<3;c++){
+    const res = checkLine(c, c+3, c+6);
+    if(res) return res;
+  }
+  // diagonals
+  let res = checkLine(0,4,8);
+  if(res) return res;
+  res = checkLine(2,4,6);
+  if(res) return res;
+
+  // other wild combos: detect 2 wilds + 1 clown, 2 wilds + any
+  // count wilds, clowns etc.
+  const wildCount = gridIndices.filter(isWild).length;
+  if(wildCount === 3){
+    return {type:'jackpot', mult: jackpot, idxs:[0,1,2]}; // fallback but should have been caught
+  }
+  if(wildCount === 2){
+    // if remaining symbol is clown -> 2 wilds + 1 clown
+    const nonWildIdx = gridIndices.findIndex(i => !isWild(i));
+    if(nonWildIdx !== -1 && isClown(gridIndices[nonWildIdx])){
+      // highlight the two wilds + clown (we'll return the index set containing wilds + clown)
+      const winIdxs = [];
+      gridIndices.forEach((v, idx) => { if(isWild(v) || idx === nonWildIdx) winIdxs.push(idx); });
+      return {type:'win', mult:PAYOUTS.TWO_WILD_ONE_CLOWN, idxs:winIdxs};
+    } else {
+      const winIdxs = [];
+      gridIndices.forEach((v, idx) => { if(isWild(v) || idx === nonWildIdx) winIdxs.push(idx); });
+      return {type:'win', mult:PAYOUTS.TWO_WILD_ANY, idxs:winIdxs};
+    }
+  }
+  if(wildCount === 1){
+    // 1 wild + 2 matching icons -> 15x
+    // find the value that appears twice (excluding wild)
+    const nonWildVals = gridIndices.filter(v => !isWild(v));
+    const counts = {};
+    nonWildVals.forEach(v => counts[v] = (counts[v]||0)+1);
+    for(const [valStr, cnt] of Object.entries(counts)){
+      if(cnt >= 2){
+        // find indexes of the two matching + wild index
+        const targetVal = Number(valStr);
+        const winIdxs = [];
+        gridIndices.forEach((v, idx) => { if(v === targetVal || isWild(v)) winIdxs.push(idx); });
+        return {type:'win', mult:PAYOUTS.ONE_WILD_TWO_MATCH, idxs:winIdxs};
+      }
+    }
+  }
+
+  return {type:'none', mult:0, idxs:[]};
+}
+
+/* --------------------------
+   Spin execution (game flow)
+   NOTE: this function executes the spin animation + evaluation.
+   It is called by requestSpin() which ensures spin audio queuing.
+*/
+function executeSpin(){
+  if(spinning || balance < selectedBet || balance < 10) return;
+  spinning = true;
+  clearWins();
+  messageEl.textContent = 'Spinning...';
+
+  // Deduct bet immediately
+  balance -= selectedBet;
+  // Increase progressive jackpot by increment and save
+  jackpot += PAYOUTS.JACKPOT_INCREMENT;
+  saveState();
+  refreshUI();
+
+  // quick flicker animation then final settle
+  const flickerRounds = 18;
+  let round = 0;
+  const finalIndices = new Array(9);
+
+  const flickerInterval = setInterval(()=>{
+    // randomize all cells
+    cells.forEach(c => {
+      c.innerHTML = `<img src="${icons[Math.floor(Math.random()*icons.length)]}">`;
+    });
+    round++;
+    if(round >= flickerRounds){
+      clearInterval(flickerInterval);
+      // settle to final random indices
+      for(let i=0;i<9;i++){
+        const idx = Math.floor(Math.random()*icons.length);
+        finalIndices[i] = idx;
+        cells[i].innerHTML = `<img src="${icons[idx]}">`;
+      }
+
+      // evaluate
+      const result = evaluateGrid(finalIndices);
+
+      if(result.type === 'jackpot'){
+        // award progressive jackpot value
+        playSound(JACKPOT_SRC, 0.05); // very quiet
+        // show jackpot popup
+        showPopup(jackpotPopup, 1600);
+        highlightWinCells(result.idxs);
+        const winAmount = jackpot;
+        balance += winAmount;
+        // reset jackpot base
+        jackpot = PAYOUTS.JACKPOT_BASE;
+        messageEl.textContent = `JACKPOT! +${winAmount} doublons`;
+        saveState();
+      } else if(result.type === 'win'){
+        playSound(WIN_SRC, 0.9);
+        highlightWinCells(result.idxs);
+        const winAmount = selectedBet * result.mult;
+        balance += winAmount;
+        messageEl.textContent = `You win +${winAmount} doublons`;
+        // show small win popup
+        showPopup(winPopup, 1000);
+        saveState();
+      } else {
+        messageEl.textContent = `You lost ${selectedBet} doublons`;
+        saveState();
+      }
+
+      // draw winning line(s)
+      if(result.idxs && result.idxs.length > 0){
+        drawWinLine(result.idxs);
+      }
+
+      spinning = false;
+      refreshUI();
+    }
+  }, 60);
+}
+
+/* --------------------------
+   UI wiring
+*/
+chips.forEach(c => {
+  c.addEventListener('click', () => {
+    chips.forEach(cc => cc.classList.remove('selected'));
+    c.classList.add('selected');
+    selectedBet = Number(c.dataset.bet);
+    selectedBetEl.textContent = selectedBet;
+    refreshUI();
+  });
+});
+
+spinBtn.addEventListener('click', () => {
+  // when spin button clicked, we requestSpin which handles queuing spin sound
+  if(balance < selectedBet) { messageEl.textContent = 'Not enough doublons'; return; }
+  if(balance < 10) { messageEl.textContent = 'AHAHAH CLOWN'; return; }
+  // if spin sound playing, queue; otherwise start
+  if(spinAudio && !spinAudio.paused){
+    // queue
+    spinQueued = true;
+    messageEl.textContent = 'Spin queued...';
+    return;
+  }
+  // start spinAudio and executeSpin
+  spinAudio = new Audio(SPIN_SRC);
+  spinAudio.volume = 0.9;
+  // when spinAudio ends, if spinQueued is true -> start another spin (only one queued)
+  spinAudio.onended = () => {
+    if(spinQueued){
+      spinQueued = false;
+      // start next spin (play audio & execute)
+      spinAudio = new Audio(SPIN_SRC);
+      spinAudio.volume = 0.9;
+      spinAudio.play().catch(()=>{});
+      executeSpin();
+    }
+  };
+  spinAudio.play().catch(()=>{});
+  executeSpin();
+});
+
+/* keyboard: space to spin */
+document.addEventListener('keydown', (e) => {
+  if(e.code === 'Space'){ e.preventDefault(); spinBtn.click(); }
+});
+
+/* helper to show initial icons */
+function fillInitial(){
+  for(let i=0;i<9;i++){
+    const idx = Math.floor(Math.random()*icons.length);
+    cells[i].innerHTML = `<img src="${icons[idx]}">`;
+  }
+}
+
+/* remove previous win classes */
+function clearWins(){
+  cells.forEach(c => c.classList.remove('win'));
+}
+
+/* highlight cells (add class) */
+function highlightWinCells(ix){
+  ix.forEach(i => {
+    if(cells[i]) cells[i].classList.add('win');
+  });
+  // also draw line for visual
+  drawWinLine(ix);
+}
+
+/* ensure canvas fits on resize */
+function updateCanvasSize(){
+  const frame = document.getElementById('slotFrame');
+  const rect = frame.getBoundingClientRect();
+  canvas.style.left = rect.left + 'px';
+  canvas.style.top = rect.top + 'px';
+  canvas.width = Math.max(0, rect.width - 24);
+  canvas.height = Math.max(0, rect.height - 24);
+}
+window.addEventListener('resize', ()=>{ updateCanvasSize(); });
+
+/* initial load */
+fillInitial();
+refreshUI();
+saveState();
+updateCanvasSize();
+
 </script>
 </body>
 </html>
