@@ -5,41 +5,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chaotic Clown Slot 3x3</title>
 <style>
-body,html{margin:0;padding:0;height:100%;font-family:Arial,sans-serif;background:#111;color:#fff;overflow-x:hidden;}
-.overlay{display:flex;gap:6px;align-items:flex-start;background:url('https://i.imgur.com/oXURWxC.png') no-repeat center center/cover;min-height:100vh;padding:12px;}
-.left{width:220px;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);border-radius:14px;padding:14px;}
-.left h3{color:yellow;text-align:center;margin:0 0 8px 0;}
-.payout-row{display:flex;justify-content:space-between;padding:6px;border-radius:8px;margin-bottom:6px;background:rgba(255,255,255,0.02);font-size:16px;}
-.balance{margin-top:12px;padding:10px;border-radius:10px;background:rgba(0,0,0,0.25);text-align:center;font-weight:700;}
+body,html{margin:0;padding:0;height:100%;font-family:Arial,sans-serif;background:#111;color:#fff;overflow-x:hidden;position:relative;}
+body.bg-shake{animation:shakeBG 0.6s ease-in-out;}
+@keyframes shakeBG{0%,100%{transform:translate(0);}25%{transform:translate(-15px,10px);}50%{transform:translate(15px,-10px);}75%{transform:translate(-10px,15px);}}
+.overlay{display:flex;gap:12px;align-items:flex-start;background:url('https://i.imgur.com/oXURWxC.png') no-repeat center center/cover;min-height:100vh;padding:12px;}
 .main{flex:1;display:flex;flex-direction:column;align-items:center;gap:12px;min-width:320px;}
 h1{margin:6px 0 0 0;font-size:32px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0.6);}
-.slot-wrap{width:min(1100px,96vw);display:flex;flex-direction:column;align-items:center;gap:10px;position:relative;}
-.slot-frame{position:relative;background:linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.6));padding:12px;border-radius:14px;display:flex;gap:10px;overflow:hidden;}
-.reel-container{width:120px;height:360px;overflow:hidden;background:linear-gradient(180deg,#111,#000);border-radius:10px;position:relative;}
+.slot-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;position:relative;}
+.slot-frame{position:relative;background:linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.6));padding:20px;border-radius:14px;display:flex;gap:12px;overflow:hidden;}
+.reel-container{width:360px;height:1080px;overflow:hidden;background:linear-gradient(180deg,#111,#000);border-radius:10px;position:relative;}
 .reel-strip{display:flex;flex-direction:column;transition:transform 1s cubic-bezier(0.25,1,0.5,1);}
-.cell{width:120px;height:120px;display:flex;justify-content:center;align-items:center;transition:box-shadow 0.2s;}
+.cell{width:360px;height:360px;display:flex;justify-content:center;align-items:center;transition:box-shadow 0.2s;}
 .cell img{max-width:90%;max-height:90%;border-radius:8px;pointer-events:none;}
-.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;width:100%;}
-.chip{padding:10px 16px;border-radius:12px;background:rgba(0,0,0,0.45);cursor:pointer;border:2px solid rgba(255,255,255,0.04);font-weight:700;}
+.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;width:100%;margin-top:12px;}
+.chip{padding:16px 24px;border-radius:12px;background:rgba(0,0,0,0.45);cursor:pointer;border:2px solid rgba(255,255,255,0.04);font-weight:700;}
 .chip.selected{outline:3px solid rgba(255,204,0,0.12);transform:translateY(-3px);}
-.spin-btn{padding:16px 36px;border-radius:16px;background:linear-gradient(135deg,yellow,orange);color:#222;font-size:20px;font-weight:900;border:none;cursor:pointer;box-shadow:0 10px 28px rgba(255,102,0,0.14);}
+.spin-btn{padding:24px 48px;border-radius:16px;background:linear-gradient(135deg,yellow,orange);color:#222;font-size:24px;font-weight:900;border:none;cursor:pointer;box-shadow:0 10px 28px rgba(255,102,0,0.14);}
 .popup{position:absolute;transform:translate(-50%,-50%) scale(.95);z-index:9999;opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;text-align:center;color:#fff;}
 .popup.show{opacity:1;transform:translate(-50%,-50%) scale(1);}
 .popup img{max-width:60%;border-radius:10px;box-shadow:0 30px 80px rgba(0,0,0,0.7);}
-.popup .amount{margin-top:6px;font-size:32px;font-weight:900;color:yellow;animation:shake 0.5s infinite;}
-@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}50%{transform:translateX(6px);}75%{transform:translateX(-6px);}}
+.popup .amount{margin-top:6px;font-size:48px;font-weight:900;color:yellow;animation:shake 0.5s infinite;}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-8px);}50%{transform:translateX(8px);}75%{transform:translateX(-8px);}}
+.payout-table{position:absolute;top:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.55);padding:12px;border-radius:10px;}
+.payout-row{display:flex;justify-content:space-between;padding:6px;border-radius:8px;margin-bottom:6px;background:rgba(255,255,255,0.02);font-size:18px;color:#fff;}
 </style>
 </head>
 <body>
 <div class="overlay">
-  <div class="left">
-    <h3>PAYOUT TABLE</h3>
-    <div class="payout-row"><span>3 Wilds (OJ)</span><strong>Clown Jackpot!</strong></div>
-    <div class="payout-row"><span>3 Clown Faces</span><strong>50×</strong></div>
-    <div class="payout-row"><span>3 Other Symbols</span><strong>10×</strong></div>
-    <div class="payout-row"><span>2 Wilds + 1 Clown</span><strong>25×</strong></div>
-    <div class="balance">Balance: <div id="balanceDisplay">1000 doubloon</div></div>
-  </div>
   <main class="main">
     <h1>Chaotic Clown Slot 3x3</h1>
     <div class="slot-wrap" id="slotWrap">
@@ -47,6 +39,13 @@ h1{margin:6px 0 0 0;font-size:32px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0
         <div class="reel-container" id="reel0"><div class="reel-strip"></div></div>
         <div class="reel-container" id="reel1"><div class="reel-strip"></div></div>
         <div class="reel-container" id="reel2"><div class="reel-strip"></div></div>
+        <div class="payout-table">
+          <div class="payout-row"><span>3 Wilds (OJ)</span><strong>Clown Jackpot!</strong></div>
+          <div class="payout-row"><span>3 Clown Faces</span><strong>50×</strong></div>
+          <div class="payout-row"><span>3 Other Symbols</span><strong>10×</strong></div>
+          <div class="payout-row"><span>2 Wilds + 1 Clown</span><strong>25×</strong></div>
+          <div class="payout-row">Balance: <strong id="balanceDisplay">1000 doubloon</strong></div>
+        </div>
       </div>
       <div class="controls">
         <div class="chip selected" data-bet="10">10</div>
@@ -117,7 +116,7 @@ function spinReels(){
     if(spinSound.paused) spinSound.play();
 
     reels.forEach((r,i)=>{
-        const offset=-120*10;
+        const offset=-360*10; // 3x bigger
         r.style.transition='transform 1s cubic-bezier(0.25,1,0.5,1)';
         r.style.transform=`translateY(${offset}px)`;
         setTimeout(()=>{r.style.transition='none'; r.style.transform='translateY(0px)';},1000+i*300);
@@ -126,19 +125,18 @@ function spinReels(){
     setTimeout(()=>{
         // Jackpot every 10th spin
         if(spinCount%10===0){
-            spinSound.volume=0; // mute spin during jackpot
+            document.body.classList.add('bg-shake');
+            spinSound.volume=0;
             const jackpotFile=jackpotFiles[Math.floor(Math.random()*jackpotFiles.length)];
             jackpotSound.src=jackpotFile; jackpotSound.play();
-            const delta=balance>50?Math.floor(balance*0.01)*(Math.random()<0.5?1:-1):1;
+            const delta=Math.random()<0.5?Math.floor(balance*0.01):-Math.floor(balance*0.01);
             balance+=delta;
             balanceEl.textContent=balance+" doubloon"; localStorage.setItem('balance',balance);
             showPopup(jackpotPopup,delta);
-            setTimeout(()=>{spinSound.volume=0.3;},jackpotSound.duration*1000);
+            jackpotSound.onended=()=>{spinSound.volume=0.3;document.body.classList.remove('bg-shake');};
         } else {
             // 98% RTP logic
-            if(Math.random()<0.02){ // lose
-                // no win
-            } else {
+            if(Math.random()<0.02){ /* lose */ } else {
                 const win=Math.floor(selectedBet*(0.1+Math.random()*0.9));
                 balance+=win; balanceEl.textContent=balance+" doubloon"; localStorage.setItem('balance',balance);
                 showPopup(winPopup,win);
