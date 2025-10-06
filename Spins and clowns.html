@@ -5,34 +5,34 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Super Chaotic Clown Slot</title>
 <style>
-body, html { margin:0; padding:0; font-family: Arial, sans-serif; background:#111; color:#fff; overflow-x:hidden; }
-.overlay { display:flex; gap:12px; padding:12px; min-height:100vh; background:url('https://i.imgur.com/oXURWxC.png') center/cover no-repeat;}
-.left { width:200px; background:rgba(0,0,0,0.55); padding:12px; border-radius:12px; backdrop-filter:blur(4px);}
-.left h3 { text-align:center; color:yellow; }
-.payout-row { display:flex; justify-content:space-between; margin-bottom:6px; font-size:16px; background:rgba(255,255,255,0.02); padding:4px 6px; border-radius:6px;}
-.balance { text-align:center; background:rgba(0,0,0,0.25); padding:8px; border-radius:8px; margin-top:12px; font-weight:700;}
-.main { flex:1; display:flex; flex-direction:column; align-items:center; gap:12px; min-width:300px;}
-h1 { margin:0; font-size:28px; text-align:center;}
-.slot-wrap { display:flex; flex-direction:column; align-items:center; gap:12px; }
-.slot-frame { display:flex; gap:12px; background:rgba(0,0,0,0.45); padding:12px; border-radius:12px; position:relative;}
-.reel-container { width:120px; height:360px; overflow:hidden; border-radius:8px; background:linear-gradient(#111,#000);}
-.reel-strip { display:flex; flex-direction:column; }
-.cell { width:120px; height:120px; display:flex; justify-content:center; align-items:center; }
-.cell img { max-width:90%; max-height:90%; border-radius:6px; pointer-events:none; }
-.controls { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:8px; }
-.chip { padding:8px 12px; border-radius:8px; background:rgba(0,0,0,0.45); cursor:pointer; border:2px solid rgba(255,255,255,0.04); font-weight:700;}
-.chip.selected { outline:2px solid yellow; transform:translateY(-2px);}
-.spin-btn { padding:12px 28px; border-radius:12px; background:orange; color:#222; font-weight:900; cursor:pointer;}
-.popup { position:absolute; transform:translate(-50%,-50%); z-index:9999; text-align:center; opacity:0; pointer-events:none; transition:opacity 0.2s, transform 0.2s;}
-.popup.show { opacity:1; transform:translate(-50%,-50%) scale(1);}
-.popup img { max-width:60%; border-radius:10px;}
-.popup .amount { margin-top:6px; font-size:24px; font-weight:900; color:yellow; animation:shake 0.5s infinite;}
+body, html {margin:0; padding:0; font-family:Arial,sans-serif; background:#111; color:#fff; overflow-x:hidden;}
+.overlay {display:flex; gap:12px; padding:12px; min-height:100vh; background:url('https://i.imgur.com/oXURWxC.png') center/cover no-repeat;}
+.left {width:200px; background:rgba(0,0,0,0.55); padding:12px; border-radius:12px; backdrop-filter:blur(4px);}
+.left h3 {text-align:center; color:yellow;}
+.payout-row {display:flex; justify-content:space-between; margin-bottom:6px; font-size:16px; background:rgba(255,255,255,0.02); padding:4px 6px; border-radius:6px;}
+.balance {text-align:center; background:rgba(0,0,0,0.25); padding:8px; border-radius:8px; margin-top:12px; font-weight:700;}
+.main {flex:1; display:flex; flex-direction:column; align-items:center; gap:12px; min-width:300px;}
+h1 {margin:0; font-size:32px; text-align:center;}
+.slot-wrap {display:flex; flex-direction:column; align-items:center; gap:12px;}
+.slot-frame {display:flex; gap:12px; background:rgba(0,0,0,0.45); padding:12px; border-radius:12px; position:relative;}
+.reel-container {width:240px; height:720px; overflow:hidden; border-radius:8px; background:linear-gradient(#111,#000);}
+.reel-strip {display:flex; flex-direction:column;}
+.cell {width:240px; height:240px; display:flex; justify-content:center; align-items:center;}
+.cell img {max-width:90%; max-height:90%; border-radius:6px; pointer-events:none;}
+.controls {display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:8px;}
+.chip {padding:10px 14px; border-radius:8px; background:rgba(0,0,0,0.45); cursor:pointer; border:2px solid rgba(255,255,255,0.04); font-weight:700;}
+.chip.selected {outline:2px solid yellow; transform:translateY(-2px);}
+.spin-btn {padding:16px 36px; border-radius:16px; background:orange; color:#222; font-weight:900; cursor:pointer; font-size:20px;}
+.popup {position:absolute; transform:translate(-50%,-50%); z-index:9999; text-align:center; opacity:0; pointer-events:none; transition:opacity 0.2s, transform 0.2s;}
+.popup.show {opacity:1; transform:translate(-50%,-50%) scale(1);}
+.popup img {max-width:60%; border-radius:10px;}
+.popup .amount {margin-top:6px; font-size:28px; font-weight:900; color:yellow; animation:shake 0.5s infinite;}
 @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-4px);}50%{transform:translateX(4px);}75%{transform:translateX(-4px);}}
-.golden-line{position:absolute;height:6px;background:gold; border-radius:3px; pointer-events:none; z-index:500; transition:all 0.4s;}
-.wild-animation{position:absolute;width:80px;height:80px; animation:shakeWild 1s infinite; z-index:9998;}
+.golden-line{position:absolute;height:12px;background:gold; border-radius:6px; pointer-events:none; z-index:500; transition:all 0.4s;}
+.wild-animation{position:absolute;width:120px;height:120px; animation:shakeWild 1s infinite; z-index:9998;}
 @keyframes shakeWild{0%,100%{transform:translate(0);}25%{transform:translate(-4px,2px);}50%{transform:translate(4px,-2px);}75%{transform:translate(-2px,4px);}}
-#wildText{position:absolute;color:yellow;font-size:16px;font-weight:bold;text-shadow:1px 1px 4px #000;display:none; z-index:9999;}
-@media(max-width:600px){.left{width:90%; order:2;} .main{order:1;width:100%;} .slot-frame{gap:6px;} .reel-container{width:100px;height:300px;} .cell{width:100px;height:100px;} }
+#wildText{position:absolute;color:yellow;font-size:20px;font-weight:bold;text-shadow:1px 1px 4px #000;display:none; z-index:9999;}
+@media(max-width:600px){.left{width:90%; order:2;} .main{order:1;width:100%;} .reel-container{width:200px;height:600px;} .cell{width:200px;height:200px;} .spin-btn{font-size:18px; padding:14px 28px;} }
 </style>
 </head>
 <body>
@@ -90,7 +90,7 @@ let spinCount=0;
 let spinning=false;
 
 // Sounds
-const spinSound=new Audio('spin.mp3'); spinSound.loop=false;
+const spinSound=new Audio('spin.mp3'); spinSound.loop=true;
 const winSound=new Audio('win.mp3');
 const jackpotFiles=['jackpot.mp3','jackpot2.mp3','jackpot3.mp3','jackpot4.mp3','jackpot5.mp3'];
 
@@ -125,8 +125,8 @@ function createReels(){
 }
 
 function getMiddleCellPosition() {
-    const middleReel = reels[1]; // middle column
-    const middleCell = middleReel.children[0].children[1]; // 2nd cell
+    const middleReel = reels[1]; 
+    const middleCell = middleReel.children[0].children[1]; 
     const rect = middleCell.getBoundingClientRect();
     return { x: rect.left + rect.width/2 + window.scrollX, y: rect.top + rect.height/2 + window.scrollY };
 }
@@ -158,30 +158,28 @@ function spin() {
     balance-=selectedBet;
     balanceDisplay.textContent=balance+" doubloon";
 
+    // Start spinSound only if not already playing
+    if(spinSound.paused) spinSound.play();
+
     // Animate reels
     const strips=[];
     reels.forEach(r=>{
       const strip=r.children[0];
       strip.style.transition='transform 1s cubic-bezier(0.25,1,0.5,1)';
-      strip.style.transform='translateY(-360px)';
+      strip.style.transform='translateY(-240px)';
       strips.push(strip);
     });
 
-    // Play spin sound
-    spinSound.currentTime=0; spinSound.play();
-
     setTimeout(()=>{
-      // Reset strips
       strips.forEach(strip=>{
         strip.style.transition='none';
         strip.style.transform='translateY(0)';
-        // Replace symbols
         strip.childNodes.forEach(cell=>{
           cell.children[0].src=randomSymbol();
         });
       });
 
-      // Check for win every 5th spin
+      // Regular win every 5th spin
       if(spinCount%5===0){ 
         const winAmount=Math.floor(selectedBet*2);
         balance+=winAmount;
