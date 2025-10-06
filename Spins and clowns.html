@@ -18,7 +18,7 @@ h1{margin:6px 0 0 0;font-size:32px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0
 .slot-wrap{width:min(1100px,96vw);display:flex;flex-direction:column;align-items:center;gap:10px;position:relative;}
 .slot-frame{position:relative;background:linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.6));padding:12px;border-radius:14px;display:flex;gap:10px;}
 .reel-container{width:360px;height:1080px;overflow:hidden;background:linear-gradient(180deg,#111,#000);border-radius:10px;position:relative;}
-.reel-strip{display:flex;flex-direction:column;transition:transform 0.8s cubic-bezier(0.25,1,0.5,1);}
+.reel-strip{display:flex;flex-direction:column;transition:transform 1s cubic-bezier(0.25,1,0.5,1);}
 .cell{width:360px;height:360px;display:flex;justify-content:center;align-items:center;transition:box-shadow 0.2s;}
 .cell img{max-width:90%;max-height:90%;border-radius:8px;pointer-events:none;}
 .controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;width:100%;}
@@ -76,27 +76,26 @@ h1{margin:6px 0 0 0;font-size:32px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0
 <div id="chaosContainer"></div>
 
 <script>
-// Symbols
+// --- Game Variables ---
 const symbols=[
 'https://i.imgur.com/KUfSTMv.jpeg','https://i.imgur.com/QTjoPgM.jpeg','https://i.imgur.com/JiEvroq.jpeg',
 'icon 2.png','icon 3.png',
 'https://bashof.org/wp-content/uploads/2023/11/OJ_Simpson_1987-e1489501934717.jpg',
 'tank 1.png'
 ];
-const reels=[
-[0,1,2,3,4,5,6,0,1,3,2],
-[1,2,0,3,4,5,6,1,0,4],
-[2,0,1,3,5,6,4,2,0,1]
-];
 const reelContainers=[document.getElementById('reel0'),document.getElementById('reel1'),document.getElementById('reel2')];
-
 let balance=parseInt(localStorage.getItem('balance'))||1000;
 let selectedBet=100;
 let spinCount=0;
 
-const chips=[...document.querySelectorAll('.chip')];
-chips.forEach(c=>c.addEventListener('click',()=>{chips.forEach(c2=>c2.classList.remove('selected'));c.classList.add('selected');selectedBet=parseInt(c.dataset.bet);}));
+// --- Sounds ---
+const spinSound=new Audio('spin.mp3'); spinSound.loop=false;
+const winSound=new Audio('win.mp3');
+const jackpotFiles=['jackpot.mp3','jackpot2.mp3','jackpot3.mp3','jackpot4.mp3','jackpot5.mp3'];
+let jackpotSound=new Audio();
 
+// --- Elements ---
+const chips=[...document.querySelectorAll('.chip')];
 const spinBtn=document.getElementById('spinBtn');
 const messageEl=document.getElementById('messageEl');
 const winPopup=document.getElementById('winPopup');
@@ -106,18 +105,39 @@ const jackpotAmountEl=document.getElementById('jackpotAmountEl');
 const goldenLinesContainer=document.getElementById('goldenLinesContainer');
 const wildAnimation=document.getElementById('wildAnimation');
 const wildText=document.getElementById('wildText');
-const chaosContainer=document.getElementById('chaosContainer');
 
-const spinSound=new Audio('spin.mp3'); spinSound.loop=false;
-const winSound=new Audio('win.mp3');
-const jackpotFiles=['jackpot.mp3','jackpot2.mp3','jackpot3.mp3','jackpot4.mp3','jackpot5.mp3'];
-let jackpotSound=new Audio();
-const marioGif='mario.gif';
+// --- Chip selection ---
+chips.forEach(c=>c.addEventListener('click',()=>{chips.forEach(c2=>c2.classList.remove('selected'));c.classList.add('selected');selectedBet=parseInt(c.dataset.bet);}))
 
-// Functions for reels, highlights, wild, chaos, etc.
-// ... [insert the full previous JS logic with fixes for golden lines, jackpotSound, wild animation, and Mario spawn] ...
+// --- Functions ---
+function randomSymbol(){return symbols[Math.floor(Math.random()*symbols.length)];}
+function clearReels(){reelContainers.forEach(r=>r.innerHTML='');}
+function createReels(){for(let i=0;i<3;i++){for(let j=0;j<3;j++){const cell=document.createElement('div');cell.className='cell';const img=document.createElement('img');img.src=randomSymbol();cell.appendChild(img);reelContainers[i].appendChild(cell);}}}
+function showPopup(popup,amount){popup.classList.add('show');popup.querySelector('.amount').textContent=amount+" doubloon";setTimeout(()=>popup.classList.remove('show'),2000);}
+function highlightWinningSymbols(){reelContainers.forEach(r=>[...r.children].forEach(c=>c.style.boxShadow='0 0 30px 8px gold,0 0 20px 4px yellow'));setTimeout(()=>reelContainers.forEach(r=>[...r.children].forEach(c=>c.style.boxShadow='')),1800);}
+function playJackpot(){let f=jackpotFiles[Math.floor(Math.random()*jackpotFiles.length)];jackpotSound=new Audio(f);spinSound.volume=0;jackpotSound.play();jackpotSound.onended=()=>{spinSound.volume=1;}}
+
+// --- Spin function ---
+function spin(){
+spinCount++;
+if(balance<selectedBet){messageEl.textContent='AHAHAH CLOWN';return;}
+balance-=selectedBet;
+document.getElementById('balanceDisplay').textContent=balance+" doubloon";
+clearReels();
+createReels();
+spinSound.currentTime=0;spinSound.play();
+
+// Jackpot every 5th spin
+if(spinCount%5===0){playJackpot();balance-=Math.floor(balance*0.1);showPopup(jackpotPopup,'-'+Math.floor(balance*0.1));document.body.classList.add('bg-shake');setTimeout(()=>document.body.classList.remove('bg-shake'),1800);}
+else{let win=Math.floor(Math.random()*selectedBet*2);balance+=win;showPopup(winPopup,win);highlightWinningSymbols();}
+
+localStorage.setItem('balance',balance);
+}
 
 spinBtn.addEventListener('click',spin);
+
+// --- Initialize ---
+createReels();
 </script>
 </body>
 </html>
