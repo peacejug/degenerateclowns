@@ -8,11 +8,15 @@
 body,html{margin:0;padding:0;height:100%;font-family:Arial,sans-serif;background:#111;color:#fff;overflow-x:hidden;position:relative;}
 body.bg-shake{animation:shakeBG 0.6s ease-in-out;}
 @keyframes shakeBG{0%,100%{transform:translate(0);}25%{transform:translate(-10px,5px);}50%{transform:translate(10px,-5px);}75%{transform:translate(-5px,10px);}}
+
+/* Overlay and layout */
 .overlay{display:flex;flex-wrap:nowrap;justify-content:flex-start;gap:6px;align-items:flex-start;background:url('https://i.imgur.com/oXURWxC.png') no-repeat center center/cover;min-height:100vh;padding:12px;}
 .left{width:200px;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);border-radius:14px;padding:14px;}
 .left h3{color:yellow;text-align:center;margin:0 0 8px 0;}
 .payout-row{display:flex;justify-content:space-between;padding:6px;border-radius:8px;margin-bottom:6px;background:rgba(255,255,255,0.02);font-size:16px;}
 .balance{margin-top:12px;padding:10px;border-radius:10px;background:rgba(0,0,0,0.25);text-align:center;font-weight:700;}
+
+/* Main slot area */
 .main{flex:1;display:flex;flex-direction:column;align-items:center;gap:12px;min-width:320px;}
 h1{margin:6px 0 0 0;font-size:32px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0.6);}
 .slot-wrap{width:min(1100px,96vw);display:flex;flex-direction:column;align-items:center;gap:10px;position:relative;}
@@ -21,21 +25,32 @@ h1{margin:6px 0 0 0;font-size:32px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0
 .reel-strip{display:flex;flex-direction:column;transition:transform 1s cubic-bezier(0.25,1,0.5,1);}
 .cell{width:360px;height:360px;display:flex;justify-content:center;align-items:center;transition:box-shadow 0.2s;}
 .cell img{max-width:90%;max-height:90%;border-radius:8px;pointer-events:none;}
+
+/* Controls */
 .controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;width:100%;}
 .chip{padding:10px 16px;border-radius:12px;background:rgba(0,0,0,0.45);cursor:pointer;border:2px solid rgba(255,255,255,0.04);font-weight:700;}
 .chip.selected{outline:3px solid rgba(255,204,0,0.12);transform:translateY(-3px);}
 .spin-btn{padding:16px 36px;border-radius:16px;background:linear-gradient(135deg,yellow,orange);color:#222;font-size:20px;font-weight:900;border:none;cursor:pointer;box-shadow:0 10px 28px rgba(255,102,0,0.14);}
+
+/* Popups */
 .popup{position:absolute;transform:translate(-50%,-50%) scale(.95);z-index:9999;opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;text-align:center;color:#fff;}
 .popup.show{opacity:1;transform:translate(-50%,-50%) scale(1);}
 .popup img{max-width:60%;border-radius:10px;box-shadow:0 30px 80px rgba(0,0,0,0.7);}
 .popup .amount{margin-top:6px;font-size:32px;font-weight:900;color:yellow;animation:shake 0.5s infinite;}
 @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}50%{transform:translateX(6px);}75%{transform:translateX(-6px);}}
+
+/* Golden line */
 .golden-line{position:absolute;height:8px;background:gold;border-radius:4px;z-index:500;pointer-events:none;transition:all 0.4s ease;}
+
+/* Wildcard */
 .wild-animation{position:absolute;width:120px;height:120px;animation:shakeWild 1s infinite;z-index:9998;}
 @keyframes shakeWild{0%,100%{transform:translate(0);}25%{transform:translate(-8px,5px);}50%{transform:translate(8px,-5px);}75%{transform:translate(-5px,8px);}}
 #wildText{position:absolute;color:yellow;font-size:24px;font-weight:bold;text-shadow:2px 2px 6px #000;display:none;z-index:9999;}
+
+/* Mario chaos */
 #marioContainer{position:absolute;top:50%;left:-200px;pointer-events:none;z-index:9997;}
 #chaosContainer{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;}
+
 @media(max-width:860px){.left{width:92%;order:2;}.main{order:1;width:100%;}.slot-wrap{width:94%;}.popup{top:40%;}}
 </style>
 </head>
@@ -107,7 +122,6 @@ let jackpotSound=new Audio();
 // Elements
 const chips=[...document.querySelectorAll('.chip')];
 const spinBtn=document.getElementById('spinBtn');
-const messageEl=document.getElementById('messageEl');
 const balanceDisplay=document.getElementById('balanceDisplay');
 const winPopup=document.getElementById('winPopup');
 const winAmountEl=document.getElementById('winAmountEl');
@@ -124,55 +138,50 @@ chips.forEach(c=>c.addEventListener('click',()=>{chips.forEach(c2=>c2.classList.
 function randomSymbol(){return symbols[Math.floor(Math.random()*symbols.length)];}
 
 // Reel spin animation
-function spinReelsAnimation(callback){
+function spinReelsAnimation(finalSymbols, callback){
     const spinDuration=1200;
     reelContainers.forEach((reel,index)=>{
         const strip=document.createElement('div'); strip.className='reel-strip';
+        // Add random symbols for spinning
         for(let i=0;i<6;i++){
             const cell=document.createElement('div'); cell.className='cell';
             const img=document.createElement('img'); img.src=randomSymbol();
             cell.appendChild(img); strip.appendChild(cell);
         }
+        // Add final symbols for the outcome
+        for(let row=0;row<3;row++){
+            const cell=document.createElement('div'); cell.className='cell';
+            const img=document.createElement('img'); img.src=finalSymbols[index][row];
+            cell.appendChild(img); strip.appendChild(cell);
+        }
         reel.innerHTML=''; reel.appendChild(strip);
-        const finalOffset=-(360*3);
+        const finalOffset=-(360*6); // shift to final symbols
         strip.style.transition=`transform ${spinDuration/1000}s cubic-bezier(0.25,1,0.5,1)`;
-        setTimeout(()=>{ strip.style.transform=`translateY(${finalOffset}px)`; },10);
+        requestAnimationFrame(()=>{strip.style.transform=`translateY(${finalOffset}px)`;});
     });
-    setTimeout(callback, spinDuration);
+    setTimeout(callback, spinDuration+100);
 }
 
-// Golden line highlight
-function highlightGoldenLine(){
-    goldenLinesContainer.innerHTML='';
-    const line=document.createElement('div'); 
-    line.className='golden-line';
-    const rect=reelContainers[0].getBoundingClientRect();
-    line.style.top=(rect.top+360)+'px';
-    line.style.left=rect.left+'px';
-    line.style.width=(reelContainers[0].offsetWidth*3)+'px';
-    goldenLinesContainer.appendChild(line);
-    setTimeout(()=>goldenLinesContainer.removeChild(line),1200);
-}
-
-// Middle cell position for popups
-function getMiddleCellPosition() {
-    const middleReel = reelContainers[1];
-    const middleCell = middleReel.children[1];
-    const rect = middleCell.getBoundingClientRect();
-    return {
-        x: rect.left + rect.width/2 + window.scrollX,
-        y: rect.top + rect.height/2 + window.scrollY
-    };
-}
-
-// Popups
-function showPopup(popup, amount) {
-    const pos = getMiddleCellPosition();
-    popup.style.left = pos.x + 'px';
-    popup.style.top = pos.y + 'px';
+function showPopup(popup, amount){
+    const rect=reelContainers[1].children[1].getBoundingClientRect();
+    popup.style.left=(rect.left+rect.width/2+window.scrollX)+'px';
+    popup.style.top=(rect.top+rect.height/2+window.scrollY)+'px';
     popup.classList.add('show');
-    popup.querySelector('.amount').textContent = amount + " doubloon";
-    setTimeout(()=>popup.classList.remove('show'), 2000);
+    popup.querySelector('.amount').textContent=amount+" doubloon";
+    setTimeout(()=>popup.classList.remove('show'),2000);
+}
+
+// Golden line horizontal only
+function drawGoldenLine(){
+    const rect0=reelContainers[0].children[1].getBoundingClientRect();
+    const rect2=reelContainers[2].children[1].getBoundingClientRect();
+    const line=document.createElement('div');
+    line.className='golden-line';
+    line.style.top=(rect0.top+rect0.height/2+window.scrollY)+'px';
+    line.style.left=rect0.left+'px';
+    line.style.width=(rect2.right-rect0.left)+'px';
+    goldenLinesContainer.appendChild(line);
+    setTimeout(()=>goldenLinesContainer.removeChild(line),2000);
 }
 
 // Wildcard animation
@@ -182,64 +191,86 @@ function triggerWild(x,y){
     let posY=0;
     const interval=setInterval(()=>{
         posY+=10; wildAnimation.style.top=posY+"px";
-        if(posY>=y){clearInterval(interval);setTimeout(()=>{wildAnimation.style.display="none";wildText.style.display="none";},1500);}
+        if(posY>=y){clearInterval(interval);setTimeout(()=>{wildAnimation.style.display="none"; wildText.style.display="none";},1500);}
     },20);
 }
 
-// Mario chaos
+// Mario animation
 function spawnMario(){
-  const topPos=100+Math.random()*(window.innerHeight-200);
-  marioContainer.style.top=topPos+"px"; marioContainer.style.left="-200px"; marioContainer.style.display="block";
-  let pos=-200;
-  const interval=setInterval(()=>{
-    pos+=15; marioContainer.style.left=pos+"px";
-    if(pos>window.innerWidth+200){clearInterval(interval); marioContainer.style.display="none";}
-  },20);
+    const topPos=100+Math.random()*(window.innerHeight-200);
+    marioContainer.style.top=topPos+"px"; marioContainer.style.left="-200px"; marioContainer.style.display="block";
+    let pos=-200;
+    const interval=setInterval(()=>{
+        pos+=15; marioContainer.style.left=pos+"px";
+        if(pos>window.innerWidth+200){clearInterval(interval); marioContainer.style.display="none";}
+    },20);
 }
 
-// Spin button
-spinBtn.addEventListener('click',()=>{if(!spinning) spin();});
-
-// Spin function
 function spin(){
+    if(spinning) return;
+    if(balance<selectedBet){alert('Not enough balance!'); return;}
     spinning=true;
     spinCount++;
-    if(balance<selectedBet){ alert('AHAHAH CLOWN'); spinning=false; return;}
-    balance-=selectedBet; balanceDisplay.textContent=balance+" doubloon";
+    balance-=selectedBet;
+    balanceDisplay.textContent=balance+" doubloon";
 
-    if(spinSound.paused) spinSound.play();
+    // Determine symbols
+    let finalSymbols=[[],[],[]];
+    for(let col=0;col<3;col++){
+        for(let row=0;row<3;row++){
+            finalSymbols[col][row]=randomSymbol();
+        }
+    }
 
-    spinReelsAnimation(()=>{
-        // Jackpot every 10th spin
-        if(spinCount%10===0){
-            const jpFile=jackpotFiles[Math.floor(Math.random()*jackpotFiles.length)];
-            jackpotSound.src=jpFile; jackpotSound.currentTime=0; jackpotSound.play();
-            spinSound.volume=0;
-            jackpotSound.onended=()=>{spinSound.volume=1;}
-            const jackpotAmount=Math.floor(balance*0.01);
-            balance+=jackpotAmount; balanceDisplay.textContent=balance+" doubloon";
-            showPopup(jackpotPopup,jackpotAmount);
-            highlightGoldenLine();
-            document.body.classList.add('bg-shake'); setTimeout(()=>document.body.classList.remove('bg-shake'),800);
+    // Force win every 5th spin
+    if(spinCount%5===0){
+        finalSymbols[0][1]=symbols[0]; finalSymbols[1][1]=symbols[0]; finalSymbols[2][1]=symbols[0];
+    }
+
+    // Force jackpot every 10th spin
+    let jackpot=false;
+    if(spinCount%10===0){
+        jackpot=true;
+        finalSymbols[0][1]=symbols[5]; finalSymbols[1][1]=symbols[5]; finalSymbols[2][1]=symbols[5];
+    }
+
+    // Spin animation
+    spinReelsAnimation(finalSymbols, ()=>{
+        // Wildcard animation if present
+        finalSymbols.forEach((col,index)=>{
+            col.forEach((sym,row)=>{
+                if(sym===symbols[5]) triggerWild(reelContainers[index].children[row].getBoundingClientRect().left, reelContainers[index].children[row].getBoundingClientRect().top);
+            });
+        });
+
+        // Draw golden line for horizontal win
+        if(spinCount%5===0 || jackpot) drawGoldenLine();
+
+        // Sound & popups
+        if(jackpot){
+            const file=jackpotFiles[Math.floor(Math.random()*jackpotFiles.length)];
+            jackpotSound.src=file; jackpotSound.play();
+            showPopup(jackpotPopup, Math.floor(balance*0.01));
+            document.body.classList.add('bg-shake');
+            setTimeout(()=>document.body.classList.remove('bg-shake'),1800);
+        } else if(spinCount%5===0){
+            winSound.play();
+            showPopup(winPopup, selectedBet*5);
         }
 
-        // Regular win every 5th spin (excluding jackpot)
-        if(spinCount%5===0 && spinCount%10!==0){
-            const winAmount=Math.floor(selectedBet*2);
-            balance+=winAmount; balanceDisplay.textContent=balance+" doubloon";
-            showPopup(winPopup,winAmount);
-            highlightGoldenLine();
-        }
-
-        // Wildcard
-        if(Math.random()<0.15){ triggerWild(400,180); }
-
-        // Mario
-        if(spinCount%6===0) spawnMario();
-
+        balanceDisplay.textContent=balance+" doubloon";
         spinning=false;
     });
+
+    // Mario every 5th spin
+    if(spinCount%5===0) spawnMario();
 }
+
+// Event
+spinBtn.addEventListener('click', ()=>{
+    if(spinSound.paused) spinSound.play();
+    spin();
+});
 </script>
 </body>
 </html>
