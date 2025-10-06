@@ -13,404 +13,210 @@
     --panel:#0f0f12;
     --text:#f5efe6;
   }
-  html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:linear-gradient(180deg,var(--bg1),var(--bg2));color:var(--text);-webkit-font-smoothing:antialiased}
-  .wrap{max-width:1200px;margin:20px auto;padding:18px;display:flex;gap:20px;align-items:flex-start;box-sizing:border-box}
-  /* Left: payout table */
-  .left {
-    width: 260px;
-    background:linear-gradient(180deg,#0c0c0d, #161619);
+  html,body{
+    height:100%;
+    margin:0;
+    font-family:Inter,system-ui,Arial,sans-serif;
+    background:linear-gradient(180deg,var(--bg1),var(--bg2));
+    color:var(--text);
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  .wrap{
+    max-width:1100px;
+    width:100%;
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    align-items:flex-start;
+    gap:16px;
+    padding:10px;
+    box-sizing:border-box;
+  }
+  .left{
+    width:240px;
+    background:#111;
     border-radius:14px;
-    padding:16px;
-    box-shadow:0 6px 30px rgba(0,0,0,0.6), 0 0 30px rgba(255,102,0,0.06) inset;
+    padding:14px;
+    box-shadow:0 4px 25px rgba(0,0,0,0.6);
     flex-shrink:0;
   }
   .left h3{margin:0 0 10px 0;font-size:18px;color:var(--accent1);text-align:center}
-  .payout-row{display:flex;justify-content:space-between;padding:8px 6px;border-radius:8px;margin-bottom:8px;background:rgba(255,255,255,0.02)}
-  .payout-row strong{color:#fff}
-  .balance{
-    margin-top:12px;padding:10px;border-radius:10px;background:rgba(255,255,255,0.03);text-align:center;font-weight:700
-  }
+  .payout-row{display:flex;justify-content:space-between;padding:6px;border-radius:6px;margin-bottom:6px;background:rgba(255,255,255,0.03);font-size:13px}
+  .balance{margin-top:8px;padding:10px;border-radius:10px;background:rgba(255,255,255,0.03);text-align:center;font-weight:700;font-size:14px}
 
-  /* Main area */
-  .main { flex:1; display:flex;flex-direction:column; align-items:center; }
-  h1{margin:0 0 12px 0;font-size:28px;letter-spacing:0.6px}
+  .main{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    min-width:280px;
+  }
+  h1{margin:6px 0 10px 0;font-size:26px;letter-spacing:0.6px;text-align:center}
   .slot-frame{
-    background: radial-gradient(circle at 30% 10%, rgba(255,200,0,0.08), rgba(0,0,0,0.5));
-    padding:22px;border-radius:18px;box-shadow:0 12px 40px rgba(0,0,0,0.6), 0 0 40px rgba(255,102,0,0.06);
-    display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:1fr;gap:12px;width:min(900px,92vw);
+    background:#000;
+    padding:12px;
+    border-radius:12px;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:8px;
+    width:min(600px,95vw);
   }
   .cell{
-    background:linear-gradient(180deg, #000, #111);
-    border-radius:12px;display:flex;justify-content:center;align-items:center;overflow:hidden;
-    border:3px solid rgba(255,255,255,0.06);height:calc((min(900px,92vw) - 22*2 - 24)/3);
-    box-shadow: inset 0 -10px 30px rgba(0,0,0,0.6);
+    background:#111;
+    border-radius:10px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+    border:2px solid rgba(255,255,255,0.05);
+    aspect-ratio:1/1;
     transition:transform 220ms ease, box-shadow 220ms;
   }
-  .cell img{max-width:92%;max-height:92%;display:block;border-radius:8px;pointer-events:none}
-  .cell.win{transform:scale(1.06);box-shadow:0 0 40px rgba(255,220,0,0.8),0 0 120px rgba(255,120,0,0.25)}
-  .controls{margin-top:18px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center;width:100%}
+  .cell img{max-width:90%;max-height:90%;display:block;border-radius:8px;pointer-events:none}
+  .cell.win{transform:scale(1.05);box-shadow:0 0 25px rgba(255,220,0,0.8),0 0 60px rgba(255,120,0,0.2)}
+  .controls{margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;width:100%}
   .bet-chips{display:flex;gap:10px}
-  .chip{padding:10px 16px;border-radius:12px;background:linear-gradient(180deg,#222,#111);cursor:pointer;border:2px solid rgba(255,255,255,0.04);font-weight:700}
-  .chip.selected{outline:3px solid rgba(255,204,0,0.15);transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,0.6)}
-  .spin-btn{padding:14px 36px;border-radius:14px;background:linear-gradient(135deg,var(--accent1),var(--accent2));color:#222;font-size:20px;font-weight:800;border:none;cursor:pointer;box-shadow:0 12px 30px rgba(255,102,0,0.14)}
-  .spin-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none}
-  .info-line{margin-top:10px;font-size:15px;color:rgba(255,255,255,0.85)}
-  .message{margin-top:12px;font-size:20px;min-height:28px;color:var(--accent1);text-shadow:0 0 8px rgba(255,120,0,0.4)}
+  .chip{padding:8px 12px;border-radius:10px;background:#222;cursor:pointer;border:2px solid rgba(255,255,255,0.05);font-weight:700;font-size:14px}
+  .chip.selected{outline:2px solid rgba(255,204,0,0.3)}
+  .spin-btn{padding:10px 26px;border-radius:12px;background:linear-gradient(135deg,var(--accent1),var(--accent2));color:#222;font-size:18px;font-weight:800;border:none;cursor:pointer;box-shadow:0 6px 18px rgba(255,102,0,0.2)}
+  .spin-btn:disabled{opacity:0.5;cursor:not-allowed}
+  .info-line{margin-top:6px;font-size:14px;color:rgba(255,255,255,0.85)}
+  .message{margin-top:10px;font-size:18px;min-height:24px;color:var(--accent1);text-align:center}
 
-  /* Popup */
   .popup{
-    position:fixed;left:50%;top:20%;transform:translateX(-50%);z-index:9999;pointer-events:none;opacity:0;transition:opacity .25s,transform .25s;
-    display:flex;align-items:center;justify-content:center;
+    position:fixed;left:50%;top:20%;transform:translateX(-50%) scale(0.95);
+    z-index:9999;pointer-events:none;opacity:0;transition:opacity .25s,transform .25s;
   }
-  .popup.show{opacity:1;transform:translateX(-50%) translateY(0)}
-  .popup img{max-width:86vw;border-radius:12px;box-shadow:0 30px 80px rgba(0,0,0,0.7)}
+  .popup.show{opacity:1;transform:translateX(-50%) scale(1)}
+  .popup img{max-width:80vw;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,0.7)}
 
-  /* Responsive */
-  @media (max-width:900px){
+  @media (max-width:768px){
     .wrap{flex-direction:column;align-items:center}
-    .left{width:92%;order:2}
-    .main{order:1;width:100%}
-    .slot-frame{width:94vw;padding:14px}
-    .cell{height:calc((94vw - 14*2 - 24)/3)}
-    .popup{top:14%}
-    .left{margin-top:18px}
+    .left{width:90%;order:2}
+    .slot-frame{width:90vw;gap:6px}
+    .cell{aspect-ratio:1/1}
+    .main{order:1}
+    .spin-btn{padding:12px 40px;font-size:20px}
   }
 </style>
 </head>
 <body>
-
 <div class="wrap">
-  <aside class="left" aria-hidden="false">
+  <aside class="left">
     <h3>PAYOUT TABLE</h3>
-    <div class="payout-row"><span>3 Clown Faces (JACKPOT)</span><strong>50×</strong></div>
+    <div class="payout-row"><span>3 Clown Faces (Jackpot)</span><strong>50×</strong></div>
     <div class="payout-row"><span>3 Other Symbols</span><strong>10×</strong></div>
     <div class="payout-row"><span>2 Clown Faces</span><strong>3×</strong></div>
     <div class="payout-row"><span>Else</span><strong>Lose</strong></div>
-
-    <div style="margin-top:12px;font-size:13px;opacity:.9">Tip: Clown faces are the first 3 icons (top of list). Diamonds/rare items pay big too.</div>
-
-    <div class="balance" style="margin-top:16px;">
-      <div style="font-size:13px;opacity:.9">Balance</div>
-      <div id="balanceDisplay" style="font-size:22px;margin-top:6px">1000 doublons</div>
+    <div class="balance">
+      Balance: <span id="balanceDisplay">1000</span> doublons
     </div>
   </aside>
 
-  <main class="main" role="main">
+  <main class="main">
     <h1>Clown Slot Game</h1>
-
-    <div class="slot-frame" id="slotFrame" aria-live="polite">
-      <!-- 9 cells -->
-      <div class="cell" data-index="0"></div>
-      <div class="cell" data-index="1"></div>
-      <div class="cell" data-index="2"></div>
-      <div class="cell" data-index="3"></div>
-      <div class="cell" data-index="4"></div>
-      <div class="cell" data-index="5"></div>
-      <div class="cell" data-index="6"></div>
-      <div class="cell" data-index="7"></div>
-      <div class="cell" data-index="8"></div>
+    <div class="slot-frame" id="slotFrame">
+      <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+      <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+      <div class="cell"></div><div class="cell"></div><div class="cell"></div>
     </div>
-
     <div class="controls">
-      <div class="bet-chips" role="toolbar" aria-label="Choose bet">
+      <div class="bet-chips">
         <div class="chip" data-bet="10">10</div>
         <div class="chip" data-bet="50">50</div>
         <div class="chip selected" data-bet="100">100</div>
       </div>
-
-      <button id="spinBtn" class="spin-btn" aria-label="Spin">SPIN</button>
+      <button id="spinBtn" class="spin-btn">SPIN</button>
     </div>
-
-    <div class="info-line">Selected bet: <span id="selectedBet">100</span> doublons</div>
+    <div class="info-line">Selected bet: <span id="selectedBet">100</span></div>
     <div class="message" id="message">Good luck!</div>
   </main>
 </div>
 
 <!-- Popups -->
-<div id="jackpotPopup" class="popup" aria-hidden="true">
-  <img src="https://peacejug.github.io/degenerateclowns/Jackpot%20sign.png" alt="JACKPOT!" />
+<div id="jackpotPopup" class="popup">
+  <img src="Jackpot sign.png" alt="Jackpot!">
 </div>
-<div id="winPopup" class="popup" aria-hidden="true" style="top:30%">
-  <img src="https://peacejug.github.io/degenerateclowns/Feels_good_man.jpeg" alt="You win!" />
+<div id="winPopup" class="popup" style="top:30%">
+  <img src="Feels_good_man.jpeg" alt="You win!">
 </div>
 
 <script>
-/* ========================
-   ASSETS & SETTINGS
-   ======================== */
-// icons array: first 3 are clown faces (jackpot tier), the rest are other symbols
 const icons = [
-  'https://peacejug.github.io/degenerateclowns/KUfSTMv.jpeg',
-  'https://peacejug.github.io/degenerateclowns/QTjoPgM.jpeg',
-  'https://peacejug.github.io/degenerateclowns/JiEvroq.jpeg',
-  'https://peacejug.github.io/degenerateclowns/tank%201.png',
-  'https://peacejug.github.io/degenerateclowns/icon%202.png',
-  'https://peacejug.github.io/degenerateclowns/icon%203.png'
-];
+  'KUfSTMv.jpeg','QTjoPgM.jpeg','JiEvroq.jpeg',
+  'tank 1.png','icon 2.png','icon 3.png'
+].map(i=>`https://peacejug.github.io/degenerateclowns/${encodeURIComponent(i)}`);
 
-// sounds (from your repo)
 const spinSoundSrc = 'https://peacejug.github.io/degenerateclowns/spin.mp3';
 const winSoundSrc = 'https://peacejug.github.io/degenerateclowns/win.mp3';
 const jackpotSoundSrc = 'https://peacejug.github.io/degenerateclowns/jackpot.mp3';
 
-// payout multipliers
-const PAYOUTS = {
-  JACKPOT_3: 50, // 3 clown faces
-  OTHER_3: 10,   // 3 of other symbols
-  TWO_CLOWNS: 3  // any 2 clown faces
-};
+const PAYOUTS={JACKPOT_3:50,OTHER_3:10,TWO_CLOWNS:3};
+let balance=1000;
+let selectedBet=100;
+let spinning=false;
 
-// starting balance
-let balance = 1000;
-let selectedBet = 100;
+const cells=[...document.querySelectorAll('.cell')];
+const chips=[...document.querySelectorAll('.chip')];
+const spinBtn=document.getElementById('spinBtn');
+const balanceEl=document.getElementById('balanceDisplay');
+const selectedBetEl=document.getElementById('selectedBet');
+const messageEl=document.getElementById('message');
+const jackpotPopup=document.getElementById('jackpotPopup');
+const winPopup=document.getElementById('winPopup');
 
-/* ========================
-   DOM REFERENCES
-   ======================== */
-const cells = Array.from(document.querySelectorAll('.cell'));
-const spinBtn = document.getElementById('spinBtn');
-const chips = Array.from(document.querySelectorAll('.chip'));
-const selectedBetEl = document.getElementById('selectedBet');
-const balanceEl = document.getElementById('balanceDisplay');
-const messageEl = document.getElementById('message');
-const jackpotPopup = document.getElementById('jackpotPopup');
-const winPopup = document.getElementById('winPopup');
+function playSound(src,vol=1){try{const a=new Audio(src);a.volume=vol;a.play().catch(()=>{});return a;}catch{return null;}}
+function refreshBalance(){balanceEl.textContent=balance;spinBtn.disabled=balance<selectedBet;}
+function clearWins(){cells.forEach(c=>c.classList.remove('win'));}
+function highlightWinCells(ix){ix.forEach(i=>cells[i]?.classList.add('win'));}
+function showPopup(el,d=1000){el.classList.add('show');setTimeout(()=>el.classList.remove('show'),d);}
+function rand(){return Math.floor(Math.random()*icons.length);}
+function isClown(i){return i<=2;}
 
-/* ========================
-   Helper: sound play with fresh instance
-   ======================== */
-function playSound(src, vol=1.0) {
-  try {
-    const a = new Audio(src);
-    a.volume = vol;
-    // play returns promise in modern browsers; ignore it
-    a.play().catch(()=>{/* user gesture required in some contexts */});
-    return a;
-  } catch(e) { console.warn('sound error', e); return null; }
-}
-
-/* Set initial balance display */
-function refreshBalance() {
-  balanceEl.textContent = `${balance} doublons`;
-  // disable spin if not enough balance
-  spinBtn.disabled = (balance < selectedBet);
-}
-refreshBalance();
-selectedBetEl.textContent = selectedBet;
-
-/* ========================
-   UI: chip selection
-   ======================== */
-chips.forEach(chip => {
-  chip.addEventListener('click', () => {
-    chips.forEach(c=>c.classList.remove('selected'));
-    chip.classList.add('selected');
-    selectedBet = Number(chip.dataset.bet);
-    selectedBetEl.textContent = selectedBet;
-    refreshBalance();
-  });
-});
-
-/* ========================
-   RNG & spin logic
-   ======================== */
-function getRandomIndex(){ return Math.floor(Math.random()*icons.length); }
-
-let spinning = false;
-
-function highlightWinCells(indexes){
-  // add .win to those cells
-  indexes.forEach(i => {
-    if(cells[i]) cells[i].classList.add('win');
-  });
-}
-
-function clearWins(){
-  cells.forEach(c=>c.classList.remove('win'));
-}
-
-function showPopup(el, duration=1000){
-  el.classList.add('show');
-  el.setAttribute('aria-hidden','false');
-  setTimeout(()=>{
-    el.classList.remove('show');
-    el.setAttribute('aria-hidden','true');
-  }, duration);
-}
-
-/* payout check:
-   grid is array of 9 indices referencing icons array
-   returns object {multiplier: n, type: 'jackpot'|'win'|'none', winIndexes: []}
-*/
-function evaluateGrid(gridIndices){
-  // helper: check if an index is clown (0..2)
-  const isClown = idx => idx >=0 && idx <=2;
-
-  // check rows
-  for(let r=0;r<3;r++){
-    const a = gridIndices[r*3], b = gridIndices[r*3+1], c = gridIndices[r*3+2];
-    if(a===b && b===c){
-      if(isClown(a)) return {multiplier:PAYOUTS.JACKPOT_3, type:'jackpot', winIndexes:[r*3,r*3+1,r*3+2]};
-      return {multiplier:PAYOUTS.OTHER_3, type:'win', winIndexes:[r*3,r*3+1,r*3+2]};
-    }
-  }
-  // check columns
-  for(let col=0;col<3;col++){
-    const a = gridIndices[col], b = gridIndices[col+3], c = gridIndices[col+6];
-    if(a===b && b===c){
-      if(isClown(a)) return {multiplier:PAYOUTS.JACKPOT_3, type:'jackpot', winIndexes:[col,col+3,col+6]};
-      return {multiplier:PAYOUTS.OTHER_3, type:'win', winIndexes:[col,col+3,col+6]};
-    }
-  }
-  // diagonals
-  if(gridIndices[0]===gridIndices[4] && gridIndices[4]===gridIndices[8]){
-    const a = gridIndices[0];
-    if(isClown(a)) return {multiplier:PAYOUTS.JACKPOT_3, type:'jackpot', winIndexes:[0,4,8]};
-    return {multiplier:PAYOUTS.OTHER_3, type:'win', winIndexes:[0,4,8]};
-  }
-  if(gridIndices[2]===gridIndices[4] && gridIndices[4]===gridIndices[6]){
-    const a = gridIndices[2];
-    if(isClown(a)) return {multiplier:PAYOUTS.JACKPOT_3, type:'jackpot', winIndexes:[2,4,6]};
-    return {multiplier:PAYOUTS.OTHER_3, type:'win', winIndexes:[2,4,6]};
-  }
-
-  // 2 clown faces anywhere (not necessarily adjacent)
-  const clownCount = gridIndices.reduce((acc,idx)=>acc + (isClown(idx) ? 1 : 0), 0);
-  if(clownCount >= 2){
-    // highlight any two clown cells (first two)
-    const winIndexes = [];
-    for(let i=0;i<gridIndices.length && winIndexes.length<2;i++){
-      if(isClown(gridIndices[i])) winIndexes.push(i);
-    }
-    return {multiplier:PAYOUTS.TWO_CLOWNS, type:'win', winIndexes};
-  }
-
-  return {multiplier:0, type:'none', winIndexes:[]};
-}
-
-/* ========================
-   Spin flow
-   ======================== */
-async function spinOnce(){
-  if(spinning) return;
-  if(balance < selectedBet) {
-    messageEl.textContent = 'Not enough doublons for that bet.';
-    return;
-  }
-
-  spinning = true;
-  spinBtn.disabled = true;
-  clearWins();
-  messageEl.textContent = 'Spinning...';
-
-  // Deduct bet instantly
-  balance -= selectedBet;
-  refreshBalance();
-
-  // play spin sound (single instance)
-  playSound(spinSoundSrc, 0.9);
-
-  // Flicker animation: show random icons quickly for a period, then settle
-  const flickerRounds = 18; // how many quick flickers
-  let round = 0;
-
-  // We'll keep finalIndices to evaluate later
-  const finalIndices = new Array(9).fill(0);
-
-  const flickerInterval = setInterval(()=>{
-    // each flicker update all cells with random icons
-    cells.forEach(cell=>{
-      // remove old img
-      const existing = cell.querySelector('img');
-      if(existing) existing.remove();
-      const img = document.createElement('img');
-      img.src = icons[getRandomIndex()];
-      cell.appendChild(img);
-    });
-    round++;
-    if(round >= flickerRounds){
-      clearInterval(flickerInterval);
-      // settle each cell to a random final icon (simulate reels stopping)
-      for(let i=0;i<9;i++){
-        const iconIndex = getRandomIndex();
-        finalIndices[i] = iconIndex;
-        const cell = cells[i];
-        const existing = cell.querySelector('img');
-        if(existing) existing.remove();
-        const img = document.createElement('img');
-        img.src = icons[iconIndex];
-        cell.appendChild(img);
-      }
-
-      // Evaluate grid and payouts
-      const evalResult = evaluateGrid(finalIndices);
-      if(evalResult.type === 'jackpot'){
-        // jackpot: play quieter jackpot sound, show popup, award payout
-        playSound(jackpotSoundSrc, 0.2);
-        showPopup(jackpotPopup, 1400);
-        highlightWinCells(evalResult.winIndexes);
-        const winAmount = selectedBet * evalResult.multiplier;
-        balance += winAmount;
-        messageEl.textContent = `JACKPOT! +${winAmount} doublons`;
-      } else if(evalResult.type === 'win'){
-        // normal win
-        playSound(winSoundSrc, 0.9);
-        highlightWinCells(evalResult.winIndexes);
-        const winAmount = selectedBet * evalResult.multiplier;
-        balance += winAmount;
-        messageEl.textContent = `You win +${winAmount} doublons`;
-        // show small win popup
-        showPopup(winPopup, 1000);
-      } else {
-        messageEl.textContent = `No win — you lost ${selectedBet} doublons`;
-      }
-
-      // done spinning
-      refreshBalance();
-      spinning = false;
-      // enable spin only if enough money for selected bet
-      spinBtn.disabled = (balance < selectedBet);
-    }
-  }, 60);
-}
-
-/* showPopup helper (with CSS class toggling) */
-function showPopup(el, duration=1000){
-  if(!el) return;
-  el.classList.add('show');
-  el.setAttribute('aria-hidden','false');
-  // play small pop sound? (optional)
-  setTimeout(()=>{
-    el.classList.remove('show');
-    el.setAttribute('aria-hidden','true');
-  }, duration);
-}
-
-/* small helper wrapper for showPopup used earlier */
-
-spinBtn.addEventListener('click', ()=>{ spinOnce(); });
-
-/* allow tapping anywhere to spin on mobile as optional (disabled to avoid accidental spins) */
-/*
-document.body.addEventListener('touchstart', (e)=>{
-  // if tapped outside UI, consider spinning? Leave commented for safety.
-});
-*/
-
-/* keyboard shortcuts */
-document.addEventListener('keydown',(e)=>{
-  if(e.code === 'Space') { e.preventDefault(); spinOnce(); }
-  if(e.code === 'Digit1'){ document.querySelector('.chip[data-bet="10"]').click(); }
-  if(e.code === 'Digit2'){ document.querySelector('.chip[data-bet="50"]').click(); }
-  if(e.code === 'Digit3'){ document.querySelector('.chip[data-bet="100"]').click(); }
-});
-
-/* disable text selection on chips */
-chips.forEach(c => c.addEventListener('mousedown', e=> e.preventDefault()));
-
-/* ensure balance updates on load */
+chips.forEach(ch=>ch.onclick=()=>{chips.forEach(c=>c.classList.remove('selected'));ch.classList.add('selected');selectedBet=+ch.dataset.bet;selectedBetEl.textContent=selectedBet;refreshBalance();});
 refreshBalance();
 
+function evaluate(g){
+  for(let r=0;r<3;r++){const [a,b,c]=[g[r*3],g[r*3+1],g[r*3+2]];
+    if(a===b&&b===c)return {mult:isClown(a)?PAYOUTS.JACKPOT_3:PAYOUTS.OTHER_3,type:isClown(a)?'jackpot':'win',ix:[r*3,r*3+1,r*3+2]};
+  }
+  for(let c=0;c<3;c++){const [a,b,d]=[g[c],g[c+3],g[c+6]];
+    if(a===b&&b===d)return {mult:isClown(a)?PAYOUTS.JACKPOT_3:PAYOUTS.OTHER_3,type:isClown(a)?'jackpot':'win',ix:[c,c+3,c+6]};
+  }
+  if(g[0]===g[4]&&g[4]===g[8])return {mult:isClown(g[0])?PAYOUTS.JACKPOT_3:PAYOUTS.OTHER_3,type:isClown(g[0])?'jackpot':'win',ix:[0,4,8]};
+  if(g[2]===g[4]&&g[4]===g[6])return {mult:isClown(g[2])?PAYOUTS.JACKPOT_3:PAYOUTS.OTHER_3,type:isClown(g[2])?'jackpot':'win',ix:[2,4,6]};
+  const clowns=g.filter(isClown).length;
+  if(clowns>=2){const ix=[];for(let i=0;i<g.length&&ix.length<2;i++)if(isClown(g[i]))ix.push(i);return {mult:PAYOUTS.TWO_CLOWNS,type:'win',ix};}
+  return {mult:0,type:'none',ix:[]};
+}
+
+async function spin(){
+  if(spinning||balance<selectedBet)return;
+  spinning=true;clearWins();
+  balance-=selectedBet;refreshBalance();
+  messageEl.textContent='Spinning...';
+  playSound(spinSoundSrc,0.9);
+  const flicks=15;let count=0;const grid=[];
+  const interval=setInterval(()=>{
+    cells.forEach(c=>{c.innerHTML=`<img src="${icons[rand()]}">`;});
+    count++;
+    if(count>=flicks){
+      clearInterval(interval);
+      for(let i=0;i<9;i++){grid[i]=rand();cells[i].innerHTML=`<img src="${icons[grid[i]]}">`;}
+      const res=evaluate(grid);
+      if(res.type==='jackpot'){playSound(jackpotSoundSrc,0.05);showPopup(jackpotPopup,1200);highlightWinCells(res.ix);const w=selectedBet*res.mult;balance+=w;messageEl.textContent=`JACKPOT! +${w}`;}
+      else if(res.type==='win'){playSound(winSoundSrc,0.8);showPopup(winPopup,900);highlightWinCells(res.ix);const w=selectedBet*res.mult;balance+=w;messageEl.textContent=`You win +${w}`;}
+      else{messageEl.textContent=`You lost ${selectedBet}`;}
+      refreshBalance();spinning=false;
+    }
+  },70);
+}
+spinBtn.onclick=spin;
+document.addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();spin();}});
 </script>
 </body>
 </html>
