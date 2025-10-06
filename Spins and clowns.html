@@ -2,24 +2,24 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Super Chaotic Clown Slot</title>
 <style>
 body,html{margin:0;padding:0;height:100%;font-family:Arial,sans-serif;background:#111;color:#fff;overflow-x:hidden;position:relative;}
 body.bg-shake{animation:shakeBG 0.6s ease-in-out;}
 @keyframes shakeBG{0%,100%{transform:translate(0);}25%{transform:translate(-10px,5px);}50%{transform:translate(10px,-5px);}75%{transform:translate(-5px,10px);}}
-.overlay{display:flex;gap:12px;align-items:flex-start;background:url('https://i.imgur.com/oXURWxC.png') no-repeat center center/cover;min-height:100vh;padding:12px;}
-.left{width:220px;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);border-radius:14px;padding:14px;}
-.left h3{color:yellow;text-align:center;margin:0 0 8px;}
+.overlay{display:flex;flex-wrap:nowrap;justify-content:flex-start;gap:6px;align-items:flex-start;background:url('https://i.imgur.com/oXURWxC.png') no-repeat center center/cover;min-height:100vh;padding:12px;}
+.left{width:200px;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);border-radius:14px;padding:14px;}
+.left h3{color:yellow;text-align:center;margin:0 0 8px 0;}
 .payout-row{display:flex;justify-content:space-between;padding:6px;border-radius:8px;margin-bottom:6px;background:rgba(255,255,255,0.02);font-size:16px;}
 .balance{margin-top:12px;padding:10px;border-radius:10px;background:rgba(0,0,0,0.25);text-align:center;font-weight:700;}
 .main{flex:1;display:flex;flex-direction:column;align-items:center;gap:12px;min-width:320px;}
-h1{margin:6px 0 0;font-size:32px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0.6);}
-.slot-wrap{width:min(1080px,96vw);display:flex;flex-direction:column;align-items:center;gap:10px;position:relative;}
+h1{margin:6px 0 0 0;font-size:32px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0.6);}
+.slot-wrap{width:min(1100px,96vw);display:flex;flex-direction:column;align-items:center;gap:10px;position:relative;}
 .slot-frame{position:relative;background:linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.6));padding:12px;border-radius:14px;display:flex;gap:10px;}
 .reel-container{width:360px;height:1080px;overflow:hidden;background:linear-gradient(180deg,#111,#000);border-radius:10px;position:relative;}
 .reel-strip{display:flex;flex-direction:column;}
-.cell{width:360px;height:360px;display:flex;justify-content:center;align-items:center;}
+.cell{width:360px;height:360px;display:flex;justify-content:center;align-items:center;transition:box-shadow 0.2s;}
 .cell img{max-width:90%;max-height:90%;border-radius:8px;pointer-events:none;}
 .controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;width:100%;}
 .chip{padding:10px 16px;border-radius:12px;background:rgba(0,0,0,0.45);cursor:pointer;border:2px solid rgba(255,255,255,0.04);font-weight:700;}
@@ -31,18 +31,12 @@ h1{margin:6px 0 0;font-size:32px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0.6
 .popup .amount{margin-top:6px;font-size:32px;font-weight:900;color:yellow;animation:shake 0.5s infinite;}
 @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}50%{transform:translateX(6px);}75%{transform:translateX(-6px);}}
 .golden-line{position:absolute;height:8px;background:gold;border-radius:4px;z-index:500;pointer-events:none;transition:all 0.4s ease;}
-.wild-animation{position:absolute;width:120px;height:120px;animation:shakeWild 1s infinite;z-index:9998;display:none;}
+.wild-animation{position:absolute;width:120px;height:120px;animation:shakeWild 1s infinite;z-index:9998;}
 @keyframes shakeWild{0%,100%{transform:translate(0);}25%{transform:translate(-8px,5px);}50%{transform:translate(8px,-5px);}75%{transform:translate(-5px,8px);}}
 #wildText{position:absolute;color:yellow;font-size:24px;font-weight:bold;text-shadow:2px 2px 6px #000;display:none;z-index:9999;}
-@media(max-width:860px){
-  .overlay{flex-direction:column;align-items:center;}
-  .left{width:94%;order:2;margin-bottom:12px;}
-  .slot-wrap{width:100%;order:1;}
-  .slot-frame{width:96vw;}
-  .reel-container{width:calc(96vw/3);height:calc(96vw/3*3);}
-  .cell{width:100%;height:calc(96vw/3);}
-  .popup img{max-width:80%;}
-}
+#marioContainer{position:absolute;top:50%;left:-200px;pointer-events:none;z-index:9997;}
+#chaosContainer{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;}
+@media(max-width:860px){.left{width:92%;order:2;}.main{order:1;width:100%;}.slot-wrap{width:94%;}.popup{top:40%;}}
 </style>
 </head>
 <body>
@@ -59,9 +53,9 @@ h1{margin:6px 0 0;font-size:32px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0.6
     <h1>Super Chaotic Clown Slot</h1>
     <div class="slot-wrap" id="slotWrap">
       <div class="slot-frame" id="slotFrame">
-        <div class="reel-container" id="reel0"></div>
-        <div class="reel-container" id="reel1"></div>
-        <div class="reel-container" id="reel2"></div>
+        <div class="reel-container" id="reel0"><div class="reel-strip"></div></div>
+        <div class="reel-container" id="reel1"><div class="reel-strip"></div></div>
+        <div class="reel-container" id="reel2"><div class="reel-strip"></div></div>
       </div>
       <div class="controls">
         <div class="chip selected" data-bet="10">10</div>
@@ -79,75 +73,133 @@ h1{margin:6px 0 0;font-size:32px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0.6
 <div id="jackpotPopup" class="popup"><img src="https://i.imgur.com/AmC9sQo.png"><div class="amount" id="jackpotAmountEl"></div></div>
 
 <!-- Wildcard -->
-<img id="wildAnimation" class="wild-animation" src="https://bashof.org/wp-content/uploads/2023/11/OJ_Simpson_1987-e1489501934717.jpg"/>
+<img id="wildAnimation" class="wild-animation" src="https://bashof.org/wp-content/uploads/2023/11/OJ_Simpson_1987-e1489501934717.jpg" style="display:none;"/>
 <div id="wildText">SUPER RARE OJ WILDCARD APPEARED</div>
 
+<!-- Mario chaos -->
+<div id="marioContainer">
+  <img id="marioGif" src="mario.gif" style="width:120px;height:120px;">
+</div>
+
+<div id="goldenLinesContainer"></div>
+<div id="chaosContainer"></div>
+
 <script>
-const symbols=['https://i.imgur.com/KUfSTMv.jpeg','https://i.imgur.com/QTjoPgM.jpeg','https://i.imgur.com/JiEvroq.jpeg','icon 2.png','icon 3.png','https://bashof.org/wp-content/uploads/2023/11/OJ_Simpson_1987-e1489501934717.jpg','tank 1.png'];
+// Symbols
+const symbols=[
+'https://i.imgur.com/KUfSTMv.jpeg','https://i.imgur.com/QTjoPgM.jpeg','https://i.imgur.com/JiEvroq.jpeg',
+'icon 2.png','icon 3.png',
+'https://bashof.org/wp-content/uploads/2023/11/OJ_Simpson_1987-e1489501934717.jpg',
+'tank 1.png'
+];
 const reelContainers=[document.getElementById('reel0'),document.getElementById('reel1'),document.getElementById('reel2')];
 let balance=parseInt(localStorage.getItem('balance'))||1000;
-let selectedBet=100; let spinCount=0;
-const spinSound=new Audio('spin.mp3'); spinSound.loop=false; let isSpinPlaying=false;
-const jackpotFiles=['jackpot.mp3','jackpot2.mp3','jackpot3.mp3','jackpot4.mp3','jackpot5.mp3']; let jackpotSound=new Audio();
-const chips=[...document.querySelectorAll('.chip')]; const spinBtn=document.getElementById('spinBtn');
-const messageEl=document.getElementById('messageEl'); const winPopup=document.getElementById('winPopup'); const winAmountEl=document.getElementById('winAmountEl');
-const jackpotPopup=document.getElementById('jackpotPopup'); const jackpotAmountEl=document.getElementById('jackpotAmountEl');
-const wildAnimation=document.getElementById('wildAnimation'); const wildText=document.getElementById('wildText');
+let selectedBet=100;
+let spinCount=0;
+let isSpinPlaying=false;
 
+// Sounds
+const spinSound=new Audio('spin.mp3'); spinSound.loop=false;
+const winSound=new Audio('win.mp3');
+const jackpotFiles=['jackpot.mp3','jackpot2.mp3','jackpot3.mp3','jackpot4.mp3','jackpot5.mp3'];
+let jackpotSound=new Audio();
+
+// Elements
+const chips=[...document.querySelectorAll('.chip')];
+const spinBtn=document.getElementById('spinBtn');
+const messageEl=document.getElementById('messageEl');
+const winPopup=document.getElementById('winPopup');
+const winAmountEl=document.getElementById('winAmountEl');
+const jackpotPopup=document.getElementById('jackpotPopup');
+const jackpotAmountEl=document.getElementById('jackpotAmountEl');
+const goldenLinesContainer=document.getElementById('goldenLinesContainer');
+const wildAnimation=document.getElementById('wildAnimation');
+const wildText=document.getElementById('wildText');
+const marioContainer=document.getElementById('marioContainer');
+
+// Chip selection
 chips.forEach(c=>c.addEventListener('click',()=>{chips.forEach(c2=>c2.classList.remove('selected'));c.classList.add('selected');selectedBet=parseInt(c.dataset.bet);}))
 
 function randomSymbol(){return symbols[Math.floor(Math.random()*symbols.length)];}
-function clearReels(){reelContainers.forEach(r=>r.innerHTML='');}
-function createReels(){reelContainers.forEach(r=>{for(let j=0;j<3;j++){const cell=document.createElement('div');cell.className='cell';const img=document.createElement('img');img.src=randomSymbol();cell.appendChild(img);r.appendChild(cell);}})}
 
-function getMiddleCellPosition() {
-    const middleReel = reelContainers[1]; 
-    const middleCell = middleReel.children[1]; 
-    const rect = middleCell.getBoundingClientRect();
-    return { x: rect.left + rect.width/2 + window.scrollX, y: rect.top + rect.height/2 + window.scrollY };
+// Reel creation
+function createReels(){
+  reelContainers.forEach(reel=>{
+    const strip=reel.querySelector('.reel-strip'); strip.innerHTML='';
+    for(let i=0;i<20;i++){
+      const cell=document.createElement('div');cell.className='cell';
+      const img=document.createElement('img');img.src=randomSymbol();
+      cell.appendChild(img);strip.appendChild(cell);
+    }
+  });
 }
 
+// Get middle cell position
+function getMiddleCellPosition() {
+    const middleReel = reelContainers[1];
+    const middleCell = middleReel.children[0].children[1];
+    const rect = middleCell.getBoundingClientRect();
+    return {x: rect.left + rect.width/2 + window.scrollX, y: rect.top + rect.height/2 + window.scrollY};
+}
+
+// Popups
 function showPopup(popup, amount) {
     const pos = getMiddleCellPosition();
-    popup.style.left = pos.x + 'px'; popup.style.top = pos.y + 'px';
-    popup.classList.add('show'); popup.querySelector('.amount').textContent = amount + " doubloon";
-    setTimeout(()=>popup.classList.remove('show'),2000);
+    popup.style.left = pos.x + 'px';
+    popup.style.top = pos.y + 'px';
+    popup.classList.add('show');
+    popup.querySelector('.amount').textContent = amount + " doubloon";
+    setTimeout(()=>popup.classList.remove('show'), 2000);
 }
 
+// Wildcard animation
 function triggerWild(x,y){
     wildAnimation.style.display="block"; wildAnimation.style.left=x+"px"; wildAnimation.style.top="0px";
     wildText.style.display="block"; wildText.style.left=x+"px"; wildText.style.top=(y+130)+"px";
-    let posY=0; const interval=setInterval(()=>{posY+=10;wildAnimation.style.top=posY+"px";if(posY>=y){clearInterval(interval);setTimeout(()=>{wildAnimation.style.display="none";wildText.style.display="none";},1500);}},20);
+    let posY=0;
+    const interval=setInterval(()=>{posY+=10;wildAnimation.style.top=posY+"px";if(posY>=y){clearInterval(interval);setTimeout(()=>{wildAnimation.style.display="none";wildText.style.display="none";},1500);}},20);
 }
 
-function spin(){
-    if(balance<selectedBet){messageEl.textContent='AHAHAH CLOWN'; return;}
-    balance-=selectedBet; document.getElementById('balanceDisplay').textContent=balance+" doubloon";
-    spinCount++; createReels();
-    
-    // Spin sound
-    if(!isSpinPlaying){isSpinPlaying=true; spinSound.currentTime=0; spinSound.play(); spinSound.onended=()=>{isSpinPlaying=false;}}
+// Mario chaos
+function spawnMario(){
+  const topPos=100+Math.random()*(window.innerHeight-200);
+  marioContainer.style.top=topPos+"px"; marioContainer.style.left="-200px"; marioContainer.style.display="block";
+  let pos=-200;
+  const interval=setInterval(()=>{pos+=15; marioContainer.style.left=pos+"px"; if(pos>window.innerWidth+200){clearInterval(interval); marioContainer.style.display="none";}},20);
+}
 
+// Spin function
+function spin(){
+  if(balance<selectedBet){messageEl.textContent='AHAHAH CLOWN';return;}
+  balance-=selectedBet; document.getElementById('balanceDisplay').textContent=balance+" doubloon";
+  spinCount++; createReels();
+
+  if(!isSpinPlaying){isSpinPlaying=true; spinSound.currentTime=0; spinSound.play(); spinSound.onended=()=>{isSpinPlaying=false;}}
+
+  reelContainers.forEach((reel,i)=>{
+    const strip=reel.querySelector('.reel-strip');
+    const randOffset = -(Math.floor(Math.random()*17)+1)*360;
+    strip.style.transition='transform 1.2s cubic-bezier(0.25,1,0.5,1)';
+    strip.style.transform=`translateY(${randOffset}px)`;
+  });
+
+  setTimeout(()=>{
     // Jackpot every 10th spin
     if(spinCount%10===0){
-        jackpotSound.src=jackpotFiles[Math.floor(Math.random()*jackpotFiles.length)];
-        spinSound.volume=0; jackpotSound.play();
-        jackpotSound.onended=()=>{spinSound.volume=1;}
-        document.body.classList.add('bg-shake');
-        setTimeout(()=>document.body.classList.remove('bg-shake'),1800);
-        const delta=Math.random()<0.5?1:-1;
-        balance+=Math.floor(balance*0.01*delta); document.getElementById('balanceDisplay').textContent=balance+" doubloon";
-        showPopup(jackpotPopup, delta>0?'+1%':'-1%');
+      jackpotSound.src=jackpotFiles[Math.floor(Math.random()*jackpotFiles.length)];
+      spinSound.volume=0; jackpotSound.play(); jackpotSound.onended=()=>{spinSound.volume=1;}
+      document.body.classList.add('bg-shake'); setTimeout(()=>document.body.classList.remove('bg-shake'),1800);
+      const delta=Math.random()<0.5?1:-1; balance+=Math.floor(balance*0.01*delta);
+      document.getElementById('balanceDisplay').textContent=balance+" doubloon";
+      showPopup(jackpotPopup, delta>0?'+1%':'-1%');
+    } else if(spinCount%3===0){
+      let win=Math.floor(selectedBet*1.5); balance+=win; document.getElementById('balanceDisplay').textContent=balance+" doubloon";
+      showPopup(winPopup,win); const pos=getMiddleCellPosition(); triggerWild(pos.x,pos.y);
     }
-
-    // Wildcard & random win
-    if(spinCount%10!==0 && spinCount%3===0){
-        let win=Math.floor(selectedBet*1.5); balance+=win; document.getElementById('balanceDisplay').textContent=balance+" doubloon";
-        showPopup(winPopup,win);
-        const pos=getMiddleCellPosition(); triggerWild(pos.x,pos.y);
-    }
-
+    // Mario every 6th spin
+    if(spinCount%6===0) spawnMario();
     localStorage.setItem('balance',balance);
+  },1200);
 }
 
 spinBtn.addEventListener('click',spin);
