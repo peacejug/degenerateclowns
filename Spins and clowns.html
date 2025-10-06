@@ -5,41 +5,44 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Super Chaotic Clown Slot</title>
 <style>
-body,html{margin:0;padding:0;height:100%;font-family:Arial,sans-serif;background:#111;color:#fff;overflow-x:hidden;position:relative;}
-body.bg-shake{animation:shakeBG 0.6s ease-in-out;}
-@keyframes shakeBG{0%,100%{transform:translate(0);}25%{transform:translate(-10px,5px);}50%{transform:translate(10px,-5px);}75%{transform:translate(-5px,10px);}}
-.overlay{display:flex;flex-wrap:nowrap;justify-content:flex-start;gap:6px;align-items:flex-start;background:url('https://i.imgur.com/oXURWxC.png') no-repeat center center/cover;min-height:100vh;padding:12px;}
-.left{width:180px;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px);border-radius:14px;padding:14px;}
-.left h3{color:yellow;text-align:center;margin:0 0 8px 0;}
-.payout-row{display:flex;justify-content:space-between;padding:6px;border-radius:8px;margin-bottom:6px;background:rgba(255,255,255,0.02);font-size:16px;}
-.balance{margin-top:12px;padding:10px;border-radius:10px;background:rgba(0,0,0,0.25);text-align:center;font-weight:700;}
-.main{flex:1;display:flex;flex-direction:column;align-items:center;gap:12px;min-width:300px;}
-h1{margin:6px 0 0 0;font-size:28px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0.6);}
-.slot-wrap{width:min(800px,90vw);display:flex;flex-direction:column;align-items:center;gap:10px;position:relative;}
-.slot-frame{position:relative;background:linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.6));padding:12px;border-radius:14px;display:flex;gap:10px;}
-.reel-container{width:240px;height:720px;overflow:hidden;background:linear-gradient(180deg,#111,#000);border-radius:10px;position:relative;}
-.reel-strip{display:flex;flex-direction:column;transition:transform 1s cubic-bezier(0.25,1,0.5,1);}
-.cell{width:240px;height:240px;display:flex;justify-content:center;align-items:center;transition:box-shadow 0.2s;}
-.cell img{max-width:90%;max-height:90%;border-radius:8px;pointer-events:none;}
-.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;width:100%;}
-.chip{padding:10px 16px;border-radius:12px;background:rgba(0,0,0,0.45);cursor:pointer;border:2px solid rgba(255,255,255,0.04);font-weight:700;}
-.chip.selected{outline:3px solid rgba(255,204,0,0.12);transform:translateY(-3px);}
-.spin-btn{padding:16px 36px;border-radius:16px;background:linear-gradient(135deg,yellow,orange);color:#222;font-size:18px;font-weight:900;border:none;cursor:pointer;box-shadow:0 8px 20px rgba(255,102,0,0.14);}
-.popup{position:absolute;transform:translate(-50%,-50%) scale(.95);z-index:9999;opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;text-align:center;color:#fff;}
-.popup.show{opacity:1;transform:translate(-50%,-50%) scale(1);}
-.popup img{max-width:60%;border-radius:10px;box-shadow:0 30px 80px rgba(0,0,0,0.7);}
-.popup .amount{margin-top:6px;font-size:28px;font-weight:900;color:yellow;animation:shake 0.5s infinite;}
-@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}50%{transform:translateX(6px);}75%{transform:translateX(-6px);}}
-.golden-line{position:absolute;height:8px;background:gold;border-radius:4px;z-index:500;pointer-events:none;transition:all 0.4s ease;}
+body, html { margin:0; padding:0; font-family: Arial, sans-serif; background:#111; color:#fff; overflow-x:hidden; }
+.overlay { display:flex; gap:12px; padding:12px; min-height:100vh; background:url('https://i.imgur.com/oXURWxC.png') center/cover no-repeat;}
+.left { width:200px; background:rgba(0,0,0,0.55); padding:12px; border-radius:12px; backdrop-filter:blur(4px);}
+.left h3 { text-align:center; color:yellow; }
+.payout-row { display:flex; justify-content:space-between; margin-bottom:6px; font-size:16px; background:rgba(255,255,255,0.02); padding:4px 6px; border-radius:6px;}
+.balance { text-align:center; background:rgba(0,0,0,0.25); padding:8px; border-radius:8px; margin-top:12px; font-weight:700;}
+.main { flex:1; display:flex; flex-direction:column; align-items:center; gap:12px; min-width:300px;}
+h1 { margin:0; font-size:28px; text-align:center;}
+.slot-wrap { display:flex; flex-direction:column; align-items:center; gap:12px; }
+.slot-frame { display:flex; gap:12px; background:rgba(0,0,0,0.45); padding:12px; border-radius:12px; position:relative;}
+.reel-container { width:120px; height:360px; overflow:hidden; border-radius:8px; background:linear-gradient(#111,#000);}
+.reel-strip { display:flex; flex-direction:column; }
+.cell { width:120px; height:120px; display:flex; justify-content:center; align-items:center; }
+.cell img { max-width:90%; max-height:90%; border-radius:6px; pointer-events:none; }
+.controls { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:8px; }
+.chip { padding:8px 12px; border-radius:8px; background:rgba(0,0,0,0.45); cursor:pointer; border:2px solid rgba(255,255,255,0.04); font-weight:700;}
+.chip.selected { outline:2px solid yellow; transform:translateY(-2px);}
+.spin-btn { padding:12px 28px; border-radius:12px; background:orange; color:#222; font-weight:900; cursor:pointer;}
+.popup { position:absolute; transform:translate(-50%,-50%); z-index:9999; text-align:center; opacity:0; pointer-events:none; transition:opacity 0.2s, transform 0.2s;}
+.popup.show { opacity:1; transform:translate(-50%,-50%) scale(1);}
+.popup img { max-width:60%; border-radius:10px;}
+.popup .amount { margin-top:6px; font-size:24px; font-weight:900; color:yellow; animation:shake 0.5s infinite;}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-4px);}50%{transform:translateX(4px);}75%{transform:translateX(-4px);}}
+.golden-line{position:absolute;height:6px;background:gold; border-radius:3px; pointer-events:none; z-index:500; transition:all 0.4s;}
+.wild-animation{position:absolute;width:80px;height:80px; animation:shakeWild 1s infinite; z-index:9998;}
+@keyframes shakeWild{0%,100%{transform:translate(0);}25%{transform:translate(-4px,2px);}50%{transform:translate(4px,-2px);}75%{transform:translate(-2px,4px);}}
+#wildText{position:absolute;color:yellow;font-size:16px;font-weight:bold;text-shadow:1px 1px 4px #000;display:none; z-index:9999;}
+@media(max-width:600px){.left{width:90%; order:2;} .main{order:1;width:100%;} .slot-frame{gap:6px;} .reel-container{width:100px;height:300px;} .cell{width:100px;height:100px;} }
 </style>
 </head>
 <body>
 <div class="overlay">
   <div class="left">
     <h3>PAYOUT TABLE</h3>
-    <div class="payout-row"><span>3 Wilds (OJ)</span><strong>Clown Jackpot!</strong></div>
+    <div class="payout-row"><span>3 Wilds</span><strong>Clown Jackpot!</strong></div>
     <div class="payout-row"><span>3 Clown Faces</span><strong>50×</strong></div>
     <div class="payout-row"><span>3 Other Symbols</span><strong>10×</strong></div>
+    <div class="payout-row"><span>2 Wilds + 1 Clown</span><strong>25×</strong></div>
     <div class="balance">Balance: <div id="balanceDisplay">10000 doubloon</div></div>
   </div>
   <main class="main">
@@ -56,7 +59,6 @@ h1{margin:6px 0 0 0;font-size:28px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0
         <div class="chip" data-bet="100">100</div>
         <button id="spinBtn" class="spin-btn">SPIN</button>
       </div>
-      <div class="message" id="messageEl">Press Spin to play</div>
     </div>
   </main>
 </div>
@@ -65,8 +67,12 @@ h1{margin:6px 0 0 0;font-size:28px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0
 <div id="winPopup" class="popup"><img src="https://i.imgur.com/DV24Tzr.jpeg"><div class="amount" id="winAmountEl"></div></div>
 <div id="jackpotPopup" class="popup"><img src="https://i.imgur.com/AmC9sQo.png"><div class="amount" id="jackpotAmountEl"></div></div>
 
+<!-- Wildcard -->
+<img id="wildAnimation" class="wild-animation" src="https://bashof.org/wp-content/uploads/2023/11/OJ_Simpson_1987-e1489501934717.jpg" style="display:none;"/>
+<div id="wildText">SUPER RARE OJ WILDCARD APPEARED</div>
+
 <!-- Golden line -->
-<div id="goldenLine" class="golden-line"></div>
+<div id="goldenLinesContainer"></div>
 
 <script>
 // Symbols
@@ -79,109 +85,127 @@ const symbols=[
 
 const reels=[document.getElementById('reel0'),document.getElementById('reel1'),document.getElementById('reel2')];
 let balance=10000;
-let selectedBet=10;
+let selectedBet=100;
 let spinCount=0;
 let spinning=false;
 
 // Sounds
-const spinSound=new Audio('spin.mp3'); spinSound.loop=false; spinSound.volume=0.3;
+const spinSound=new Audio('spin.mp3'); spinSound.loop=false;
 const winSound=new Audio('win.mp3');
 const jackpotFiles=['jackpot.mp3','jackpot2.mp3','jackpot3.mp3','jackpot4.mp3','jackpot5.mp3'];
-let jackpotSound=new Audio();
 
 // Elements
 const chips=[...document.querySelectorAll('.chip')];
 const spinBtn=document.getElementById('spinBtn');
-const balanceEl=document.getElementById('balanceDisplay');
+const balanceDisplay=document.getElementById('balanceDisplay');
 const winPopup=document.getElementById('winPopup');
 const winAmountEl=document.getElementById('winAmountEl');
 const jackpotPopup=document.getElementById('jackpotPopup');
 const jackpotAmountEl=document.getElementById('jackpotAmountEl');
-const goldenLine=document.getElementById('goldenLine');
+const goldenLinesContainer=document.getElementById('goldenLinesContainer');
+const wildAnimation=document.getElementById('wildAnimation');
+const wildText=document.getElementById('wildText');
 
 // Chip selection
-chips.forEach(c=>c.addEventListener('click',()=>{
-  chips.forEach(c2=>c2.classList.remove('selected'));
-  c.classList.add('selected');
-  selectedBet=parseInt(c.dataset.bet);
-}));
+chips.forEach(c=>c.addEventListener('click',()=>{chips.forEach(c2=>c2.classList.remove('selected'));c.classList.add('selected');selectedBet=parseInt(c.dataset.bet);}))
 
+// Functions
 function randomSymbol(){return symbols[Math.floor(Math.random()*symbols.length)];}
 function clearReels(){reels.forEach(r=>r.innerHTML='');}
-
-// Create reels with animation
-function spinReels(callback){
-  clearReels();
-  const strips=[];
-  for(let i=0;i<3;i++){
+function createReels(){
+  reels.forEach(r=>{
     const strip=document.createElement('div'); strip.className='reel-strip';
-    for(let j=0;j<3;j++){
+    for(let i=0;i<6;i++){
       const cell=document.createElement('div'); cell.className='cell';
       const img=document.createElement('img'); img.src=randomSymbol();
       cell.appendChild(img); strip.appendChild(cell);
     }
-    reels[i].appendChild(strip);
-    strips.push(strip);
-  }
-  let animTime=0;
-  strips.forEach((strip,index)=>{
-    const delay=index*150;
-    setTimeout(()=>{strip.style.transform='translateY(-240px)';},delay);
-    animTime=Math.max(animTime,1000+delay);
+    r.appendChild(strip);
   });
-  setTimeout(callback,animTime);
 }
 
-function showPopup(popup, amount){
-  popup.style.left='50%';
-  popup.style.top='50%';
-  popup.classList.add('show');
-  popup.querySelector('.amount').textContent=amount+' doubloon';
-  setTimeout(()=>popup.classList.remove('show'),2000);
+function getMiddleCellPosition() {
+    const middleReel = reels[1]; // middle column
+    const middleCell = middleReel.children[0].children[1]; // 2nd cell
+    const rect = middleCell.getBoundingClientRect();
+    return { x: rect.left + rect.width/2 + window.scrollX, y: rect.top + rect.height/2 + window.scrollY };
 }
 
-function highlightGoldenLine(){
-  goldenLine.style.top='360px';
-  goldenLine.style.left=reels[0].getBoundingClientRect().left+'px';
-  goldenLine.style.width=(reels[2].getBoundingClientRect().right - reels[0].getBoundingClientRect().left)+'px';
-  goldenLine.style.opacity=1;
-  setTimeout(()=>{goldenLine.style.opacity=0;},1500);
+function showPopup(popup, amount) {
+    const pos = getMiddleCellPosition();
+    popup.style.left = pos.x + 'px';
+    popup.style.top = pos.y + 'px';
+    popup.classList.add('show');
+    popup.querySelector('.amount').textContent = amount + " doubloon";
+    setTimeout(()=>popup.classList.remove('show'),2000);
 }
 
-function spin(){
-  if(spinning) return;
-  if(balance<selectedBet){alert('AHAHAH CLOWN'); return;}
-  spinning=true;
-  balance-=selectedBet; balanceEl.textContent=balance+' doubloon';
-  spinSound.currentTime=0; spinSound.play();
-  spinCount++;
+function highlightGoldenLine() {
+    goldenLinesContainer.innerHTML='';
+    const line=document.createElement('div'); line.className='golden-line';
+    const middleReel=reels[1].children[0].children[1].getBoundingClientRect();
+    line.style.width=reels[0].offsetWidth*3+'px';
+    line.style.top=middleReel.top + middleReel.height/2 + window.scrollY +'px';
+    line.style.left='0px';
+    goldenLinesContainer.appendChild(line);
+}
 
-  spinReels(()=>{
-    // Jackpot every 10th spin
-    if(spinCount%10===0){
-      jackpotSound=new Audio(jackpotFiles[Math.floor(Math.random()*jackpotFiles.length)]);
-      spinSound.volume=0;
-      jackpotSound.play();
-      jackpotSound.onended=()=>{spinSound.volume=0.3;}
-      let jackpot=Math.floor(balance*0.01);
-      balance+=jackpot; balanceEl.textContent=balance+' doubloon';
-      showPopup(jackpotPopup,jackpot);
-      document.body.classList.add('bg-shake');
-      setTimeout(()=>document.body.classList.remove('bg-shake'),1800);
-      highlightGoldenLine();
-    } else if(spinCount%5===0){
-      let win=Math.floor(selectedBet*2*Math.random());
-      balance+=win; balanceEl.textContent=balance+' doubloon';
-      showPopup(winPopup,win);
-      winSound.currentTime=0; winSound.play();
-      highlightGoldenLine();
-    }
-    spinning=false;
-  });
+function spin() {
+    if(spinning) return;
+    spinning=true;
+    spinCount++;
+    if(balance<selectedBet){ alert('AHAHAH CLOWN'); spinning=false; return;}
+    balance-=selectedBet;
+    balanceDisplay.textContent=balance+" doubloon";
+
+    // Animate reels
+    const strips=[];
+    reels.forEach(r=>{
+      const strip=r.children[0];
+      strip.style.transition='transform 1s cubic-bezier(0.25,1,0.5,1)';
+      strip.style.transform='translateY(-360px)';
+      strips.push(strip);
+    });
+
+    // Play spin sound
+    spinSound.currentTime=0; spinSound.play();
+
+    setTimeout(()=>{
+      // Reset strips
+      strips.forEach(strip=>{
+        strip.style.transition='none';
+        strip.style.transform='translateY(0)';
+        // Replace symbols
+        strip.childNodes.forEach(cell=>{
+          cell.children[0].src=randomSymbol();
+        });
+      });
+
+      // Check for win every 5th spin
+      if(spinCount%5===0){ 
+        const winAmount=Math.floor(selectedBet*2);
+        balance+=winAmount;
+        balanceDisplay.textContent=balance+" doubloon";
+        showPopup(winPopup,winAmount);
+        highlightGoldenLine();
+      }
+      // Jackpot every 10th spin
+      if(spinCount%10===0){
+        const jackpotAmount=Math.floor(balance*0.01);
+        balance+=jackpotAmount;
+        balanceDisplay.textContent=balance+" doubloon";
+        showPopup(jackpotPopup,jackpotAmount);
+        highlightGoldenLine();
+        document.body.classList.add('bg-shake');
+        setTimeout(()=>document.body.classList.remove('bg-shake'),800);
+      }
+
+      spinning=false;
+    },1100);
 }
 
 spinBtn.addEventListener('click',spin);
-clearReels();
+createReels();
 </script>
 </body>
 </html>
