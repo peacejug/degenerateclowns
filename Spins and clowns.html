@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Clown Slot Game v9</title>
+<title>Clown Slot Game v11</title>
 <style>
 :root{--accent1:#ffcc00;--accent2:#ff6600;--text:#f5efe6;}
 html,body{margin:0;padding:0;height:100%;font-family:Arial,sans-serif;background:#111;color:var(--text);}
@@ -29,6 +29,13 @@ h1{margin:6px 0 0 0;font-size:28px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0
   60%{transform:translateY(-30px) rotate(-10deg) scale(0.95);}
   100%{transform:translateY(0) rotate(0deg) scale(1);}
 }
+@keyframes lightning{
+  0%{opacity:0;transform:scaleY(0);}
+  30%{opacity:1;transform:scaleY(1);}
+  60%{opacity:1;transform:scaleY(1);}
+  100%{opacity:0;transform:scaleY(0);}
+}
+.lightning{position:absolute;width:6px;height:100%;background:linear-gradient(to bottom, #fff, #fffc);z-index:998;animation:lightning 0.3s ease-in-out forwards;pointer-events:none;}
 .controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;width:100%;}
 .bet-chips{display:flex;gap:8px;}
 .chip{padding:8px 12px;border-radius:10px;background:rgba(0,0,0,0.45);cursor:pointer;border:2px solid rgba(255,255,255,0.04);font-weight:700;}
@@ -42,18 +49,10 @@ h1{margin:6px 0 0 0;font-size:28px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0
 .popup.show{opacity:1;transform:translate(-50%,-50%) scale(1);}
 .popup img{max-width:70%;border-radius:10px;box-shadow:0 30px 80px rgba(0,0,0,0.7);}
 .popup .amount{margin-top:6px;font-size:22px;font-weight:900;color:var(--accent1);animation:shake 0.5s infinite;}
-@keyframes shake{
-  0%,100%{transform:translateX(0);}
-  25%{transform:translateX(-6px);}
-  50%{transform:translateX(6px);}
-  75%{transform:translateX(-6px);}
-}
-@media (max-width:860px){
-  .left{width:92%;order:2;}
-  .main{order:1;width:100%;}
-  .slot-wrap{width:94%;}
-  .popup{top:40%;}
-}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}50%{transform:translateX(6px);}75%{transform:translateX(-6px);}}
+@keyframes bgShake{0%{transform:translate(0,0);}10%{transform:translate(-5px,5px);}20%{transform:translate(5px,-5px);}30%{transform:translate(-5px,5px);}40%{transform:translate(5px,-5px);}50%{transform:translate(-5px,5px);}60%{transform:translate(5px,-5px);}70%{transform:translate(-5px,5px);}80%{transform:translate(5px,-5px);}90%{transform:translate(-5px,5px);}100%{transform:translate(0,0);}}
+.bg-shake{animation:bgShake 0.6s ease-in-out;}
+@media (max-width:860px){.left{width:92%;order:2;}.main{order:1;width:100%;}.slot-wrap{width:94%;}.popup{top:40%;}}
 </style>
 </head>
 <body>
@@ -67,12 +66,8 @@ h1{margin:6px 0 0 0;font-size:28px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0
 <div class="payout-row"><span>2 Wilds + 1 Clown</span><strong>25×</strong></div>
 <div class="payout-row"><span>2 Wilds + anything</span><strong>5×</strong></div>
 <div class="payout-row"><span>1 Wild + 2 matching</span><strong>15×</strong></div>
-<div class="balance">
-Balance: <div id="balanceDisplay" style="font-size:18px;margin-top:6px">1000 doublons</div>
-</div>
-<div class="jackpotBox" id="jackpotBox" title="Progressive Jackpot">
-Progressive Jackpot:<div id="jackpotDisplay" style="font-size:18px;margin-top:6px">10000</div>
-</div>
+<div class="balance">Balance: <div id="balanceDisplay" style="font-size:18px;margin-top:6px">1000 doubloon</div></div>
+<div class="jackpotBox" id="jackpotBox" title="Progressive Jackpot">Progressive Jackpot:<div id="jackpotDisplay" style="font-size:18px;margin-top:6px">10000</div></div>
 </aside>
 <main class="main" role="main">
 <h1>Clown Slot Game</h1>
@@ -97,67 +92,53 @@ Progressive Jackpot:<div id="jackpotDisplay" style="font-size:18px;margin-top:6p
 </div>
 <button id="spinBtn" class="spin-btn" aria-label="Spin">SPIN</button>
 </div>
-<div class="info-line">Selected bet: <strong id="selectedBet">100</strong> doublons</div>
-<div class="message" id="message">Good luck!</div>
+<div class="message" id="messageEl">Press Spin to play</div>
 </div>
 </main>
 </div>
 </div>
 
-<div id="jackpotPopup" class="popup"><img src="https://i.imgur.com/AmC9sQo.png" alt="Jackpot!"><div class="amount" id="jackpotAmount"></div></div>
-<div id="winPopup" class="popup"><img src="https://i.imgur.com/DV24Tzr.jpeg" alt="You Win!"><div class="amount" id="winAmount"></div></div>
-
-<audio id="spinSound" src="spin.mp3" preload="auto"></audio>
-<audio id="winSound" src="win.mp3" preload="auto"></audio>
-<audio id="jackpotSound" preload="auto"></audio>
+<!-- Popups -->
+<div id="winPopup" class="popup"><img src="https://i.imgur.com/DV24Tzr.jpeg" alt="You Win"><div class="amount" id="winAmountEl"></div></div>
+<div id="jackpotPopup" class="popup"><img src="https://i.imgur.com/AmC9sQo.png" alt="Jackpot"><div class="amount" id="jackpotAmountEl"></div></div>
 
 <script>
 const slotFrame=document.getElementById('slotFrame');
-const cells=[...slotFrame.querySelectorAll('.cell')];
+const cells=[...slotFrame.children].filter(c=>c.tagName==='DIV');
 const spinBtn=document.getElementById('spinBtn');
 const balanceDisplay=document.getElementById('balanceDisplay');
 const jackpotDisplay=document.getElementById('jackpotDisplay');
-const selectedBetDisplay=document.getElementById('selectedBet');
-const chips=document.querySelectorAll('.chip');
-const messageEl=document.getElementById('message');
+const messageEl=document.getElementById('messageEl');
 const winPopup=document.getElementById('winPopup');
+const winAmountEl=document.getElementById('winAmountEl');
 const jackpotPopup=document.getElementById('jackpotPopup');
-const winAmountEl=document.getElementById('winAmount');
-const jackpotAmountEl=document.getElementById('jackpotAmount');
+const jackpotAmountEl=document.getElementById('jackpotAmountEl');
 const lineCanvas=document.getElementById('lineCanvas');
 const ctx=lineCanvas.getContext('2d');
-
-const spinSound=document.getElementById('spinSound');
-const winSound=document.getElementById('winSound');
-const jackpotSound=document.getElementById('jackpotSound');
-const jackpotFiles=['jackpot.mp3','jackpot2.mp3','jackpot3.mp3','jackpot4.mp3','jackpot5.mp3'];
-
 let balance=parseInt(localStorage.getItem('balance'))||1000;
-let jackpot=parseInt(localStorage.getItem('jackpot'))||10000;
+balanceDisplay.textContent=balance+' doubloon';
 let selectedBet=100;
 let isSpinning=false;
-
-balanceDisplay.textContent=balance;
-jackpotDisplay.textContent=jackpot;
-selectedBetDisplay.textContent=selectedBet;
-
-// Symbols: 0,1,2 = clown faces, 3=icon2, 4=icon3, 5=wild, 6=tank
+const jackpot=10000;
+let spinSound=new Audio('spin.mp3'); spinSound.loop=false;
+const winSound=new Audio('win.mp3');
+const jackpotFiles=['jackpot.mp3','jackpot2.mp3','jackpot3.mp3','jackpot4.mp3','jackpot5.mp3'];
+let jackpotSound=new Audio();
+const chips=[...document.querySelectorAll('.chip')];
 const symbols=[
 'https://i.imgur.com/KUfSTMv.jpeg',
 'https://i.imgur.com/QTjoPgM.jpeg',
 'https://i.imgur.com/JiEvroq.jpeg',
-'icon 2.png', 
-'icon 3.png', 
-'https://bashof.org/wp-content/uploads/2023/11/OJ_Simpson_1987-e1489501934717.jpg', 
-'tank 1.png' 
+'icon 2.png',
+'icon 3.png',
+'https://bashof.org/wp-content/uploads/2023/11/OJ_Simpson_1987-e1489501934717.jpg',
+'tank 1.png'
 ];
 
-// Bet selection
 chips.forEach(c=>c.addEventListener('click',()=>{
-  chips.forEach(c2=>c2.classList.remove('selected'));
-  c.classList.add('selected');
-  selectedBet=parseInt(c.dataset.bet);
-  selectedBetDisplay.textContent=selectedBet;
+chips.forEach(c2=>c2.classList.remove('selected'));
+c.classList.add('selected');
+selectedBet=parseInt(c.dataset.bet);
 }));
 
 function resizeCanvas(){lineCanvas.width=slotFrame.offsetWidth;lineCanvas.height=slotFrame.offsetHeight;}
@@ -165,102 +146,122 @@ window.addEventListener('resize',resizeCanvas);
 resizeCanvas();
 
 function drawLine(wins){
-  ctx.clearRect(0,0,lineCanvas.width,lineCanvas.height);
-  ctx.strokeStyle='yellow';ctx.lineWidth=5;
-  wins.forEach(win=>{
-    const [a,b,c]=win.cells.map(i=>cells[i]);
-    ctx.beginPath();
-    ctx.moveTo(a.offsetLeft+a.offsetWidth/2,a.offsetTop+a.offsetHeight/2);
-    ctx.lineTo(c.offsetLeft+c.offsetWidth/2,c.offsetTop+c.offsetHeight/2);
-    ctx.stroke();
-  });
+ctx.clearRect(0,0,lineCanvas.width,lineCanvas.height);
+ctx.strokeStyle='yellow';ctx.lineWidth=5;
+wins.forEach(win=>{
+const [a,b,c]=win.cells.map(i=>cells[i]);
+ctx.beginPath();
+ctx.moveTo(a.offsetLeft+a.offsetWidth/2,a.offsetTop+a.offsetHeight/2);
+ctx.lineTo(c.offsetLeft+c.offsetWidth/2,c.offsetTop+c.offsetHeight/2);
+ctx.stroke();
+});
+}
+
+function lightningWild(cell){
+const lightning=document.createElement('div');
+lightning.classList.add('lightning');
+const rect=cell.getBoundingClientRect();
+const parent=slotFrame.getBoundingClientRect();
+lightning.style.left=(rect.left-parent.left+rect.width/2-3)+'px';
+slotFrame.appendChild(lightning);
+setTimeout(()=>{
+lightning.remove();
+animateWild(cell);
+},300);
 }
 
 function animateWild(cell){
-  const wildFly=document.createElement('img');
-  wildFly.src=symbols[5];
-  wildFly.classList.add('wild-fly');
-  slotFrame.appendChild(wildFly);
-  const rect=cell.getBoundingClientRect();
-  const parentRect=slotFrame.getBoundingClientRect();
-  wildFly.style.left=(rect.left-parentRect.left)+'px';
-  wildFly.style.top=(rect.top-parentRect.top-150)+'px';
-  setTimeout(()=>{wildFly.remove();},1000);
+const wildFly=document.createElement('img');
+wildFly.src=symbols[5];
+wildFly.classList.add('wild-fly');
+slotFrame.appendChild(wildFly);
+const rect=cell.getBoundingClientRect();
+const parentRect=slotFrame.getBoundingClientRect();
+wildFly.style.left=(rect.left-parentRect.left)+'px';
+wildFly.style.top=(rect.top-parentRect.top-150)+'px';
+setTimeout(()=>{wildFly.remove();},1000);
 }
 
 function spin(){
-  if(balance<=0){messageEl.textContent="AHAHAH CLOWN";return;}
-  if(isSpinning)return;
-  isSpinning=true;
-  messageEl.textContent="Spinning...";
-  if(spinSound.paused) spinSound.play();
+if(balance<=0){messageEl.textContent="AHAHAH CLOWN";return;}
+if(isSpinning)return;
+isSpinning=true;
+messageEl.textContent="Spinning...";
+if(spinSound.paused) spinSound.play();
 
-  // Matching logic per row
-  const result=[];
+// RTP control ~95%
+if(Math.random()>0.95){ // rare jackpot event
+  result=[5,5,5,5,5,5,5,5,5];
+} else {
+  var result=[];
   const options=[0,1,2,3,4,6];
   for(let row=0;row<3;row++){
     const mainSym=options[Math.floor(Math.random()*options.length)];
     for(let col=0;col<3;col++){
       const idx=row*3+col;
-      if(Math.random()<0.05) result[idx]=5; // wild
-      else if(Math.random()<0.1) result[idx]=options[Math.floor(Math.random()*options.length)]; // variation
+      if(Math.random()<0.05) result[idx]=5;
       else result[idx]=mainSym;
       cells[idx].classList.remove('win');
       cells[idx].innerHTML=`<img src="${symbols[result[idx]]}" alt="symbol">`;
-      if(result[idx]===5) animateWild(cells[idx]);
+      if(result[idx]===5) lightningWild(cells[idx]);
     }
   }
+}
 
-  setTimeout(()=>{
-    let multiplier=Math.random()*0.95+0.05;
-    let winAmount=0;
-    let wins=[];
-    // Jackpot if 3 wilds in middle row
-    const middleRow=[3,4,5];
-    if(middleRow.every(i=>result[i]===5)){
-      winAmount=jackpot;
-      balance+=winAmount;
-      const jpFile=jackpotFiles[Math.floor(Math.random()*jackpotFiles.length)];
-      jackpotSound.src=jpFile; jackpotSound.volume=1; jackpotSound.currentTime=0; jackpotSound.play();
-      spinSound.volume=0;
-      jackpotPopup.classList.add('show');
-      jackpotAmountEl.textContent=winAmount+" doublons";
-      // center popup on middle cell
-      const midCell=cells[4].getBoundingClientRect();
-      const parent=slotFrame.getBoundingClientRect();
-      jackpotPopup.style.left=(midCell.left-parent.left+midCell.width/2)+"px";
-      jackpotPopup.style.top=(midCell.top-parent.top+midCell.height/2)+"px";
-      setTimeout(()=>{jackpotPopup.classList.remove('show'); spinSound.volume=1;},1800);
-    } else {
-      // normal win: check each row for 3 matching non-wild
-      for(let row=0;row<3;row++){
-        const idxs=[row*3,row*3+1,row*3+2];
-        const vals=idxs.map(i=>result[i]);
-        const main=vals.find(v=>v!==5);
-        if(vals.every(v=>v===main || v===5)){
-          winAmount+=Math.round(selectedBet*10*multiplier);
-          wins.push({cells:idxs});
-        }
-      }
-      if(winAmount>0){
-        balance+=winAmount;
-        winSound.currentTime=0; winSound.play();
-        winPopup.classList.add('show'); 
-        winAmountEl.textContent=winAmount+" doublons";
-        // center popup on middle cell
-        const midCell=cells[4].getBoundingClientRect();
-        const parent=slotFrame.getBoundingClientRect();
-        winPopup.style.left=(midCell.left-parent.left+midCell.width/2)+"px";
-        winPopup.style.top=(midCell.top-parent.top+midCell.height/2)+"px";
-        setTimeout(()=>winPopup.classList.remove('show'),1800);
-      }
-    }
-
-    balanceDisplay.textContent=balance;
-    localStorage.setItem('balance',balance);
-    drawLine(wins);
-    isSpinning=false;
-  },800);
+setTimeout(()=>{
+let multiplier=Math.random()*0.95+0.05;
+let winAmount=0;
+let wins=[];
+const middleRow=[3,4,5];
+if(middleRow.every(i=>result[i]===5)){
+winAmount=jackpot;
+balance+=winAmount;
+// Random jackpot sound
+const jpFile=jackpotFiles[Math.floor(Math.random()*jackpotFiles.length)];
+jackpotSound.src=jpFile; jackpotSound.volume=0.5; jackpotSound.currentTime=0; jackpotSound.play();
+spinSound.volume=0;
+// Show jackpot popup centered over middle cell
+const midCell=cells[4].getBoundingClientRect();
+const parent=slotFrame.getBoundingClientRect();
+jackpotPopup.style.left=(midCell.left-parent.left+midCell.width/2)+"px";
+jackpotPopup.style.top=(midCell.top-parent.top+midCell.height/2)+"px";
+jackpotAmountEl.textContent=winAmount+" doubloon";
+jackpotPopup.classList.add('show');
+// Shake background
+document.body.classList.add('bg-shake');
+setTimeout(()=>{
+jackpotPopup.classList.remove('show');
+document.body.classList.remove('bg-shake');
+spinSound.volume=1;
+},1800);
+} else {
+// Normal row wins
+for(let row=0;row<3;row++){
+const idxs=[row*3,row*3+1,row*3+2];
+const vals=idxs.map(i=>result[i]);
+const main=vals.find(v=>v!==5);
+if(vals.every(v=>v===main || v===5)){
+winAmount+=Math.round(selectedBet*10*multiplier);
+wins.push({cells:idxs});
+}
+}
+if(winAmount>0){
+balance+=winAmount;
+winSound.currentTime=0; winSound.play();
+const midCell=cells[4].getBoundingClientRect();
+const parent=slotFrame.getBoundingClientRect();
+winPopup.style.left=(midCell.left-parent.left+midCell.width/2)+"px";
+winPopup.style.top=(midCell.top-parent.top+midCell.height/2)+"px";
+winAmountEl.textContent=winAmount+" doubloon";
+winPopup.classList.add('show');
+setTimeout(()=>winPopup.classList.remove('show'),1800);
+}
+}
+balanceDisplay.textContent=balance+" doubloon";
+localStorage.setItem('balance',balance);
+drawLine(wins);
+isSpinning=false;
+},800);
 }
 
 spinBtn.addEventListener('click',spin);
